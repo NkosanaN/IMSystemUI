@@ -1,0 +1,60 @@
+﻿@model IMSystemUI.Domain.Item
+
+@{
+    ViewData["Title"] = "Details Item";
+    string Description = string.Empty;
+}
+
+<div>
+    <table class="table rounded table-bordered shadow-lg">
+        <tbody>
+            <tr>
+                <th style="background-color: #676e79;color: #fff">@Html.DisplayNameFor(model => model.ItemId)</th>
+                <th>@Html.DisplayFor(model => model.ItemId) </th>
+            </tr>
+            <tr>
+                <th style="background-color: #676e79;color: #fff">@Html.DisplayNameFor(model => model.Name)</th>
+                <th> @Html.DisplayFor(model => model.Name)</th>
+            </tr>
+        </tbody>
+    </table>
+
+    <h4 class="text-center">Item </h4>
+    <table class="table table-bordered shadow-lg">
+        <thead class="alert-heading" style="background-color: #676e79;color: #fff">
+            <tr>
+                <th>@Html.DisplayNameFor(model => model.Serialno)</th>
+                <th>@Html.DisplayNameFor(model => model.Description)</th>
+                <th>@Html.DisplayNameFor(model => model.ItemTag)</th>
+                <th>@Html.DisplayNameFor(model => model.Qty)</th>
+                <th>@Html.DisplayNameFor(model => model.DatePurchased)</th>
+                <th>@Html.DisplayNameFor(model => model.DueforRepair)</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <th>@Html.DisplayFor(model => model.Serialno) </th>
+                <th>
+                    @{
+
+                        //if (string.IsNullOrEmpty(Model.Description))
+                        //    Description = "N/A";
+                        //else
+                        //    Description = Model.Description;
+                    }
+                    <text>@Description</text>
+                </th>
+
+                <th> @Html.DisplayFor(model => model.ItemTag)</th>
+                <th> @Html.DisplayFor(model => model.Qty)</th>
+                <th> @Html.DisplayFor(model => model.DatePurchased)</th>
+                <th> @Html.DisplayFor(model => model.DueforRepair)</th>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<div>
+    @Html.ActionLink("Edit", "Edit", new { id = Model.ItemId }, new { @class = "btn btn-light shadow-sm m-1" })
+    <a asp-action="Index" class="btn btn-outline-secondary shadow-sm">Back to List</a>
+</div>

@@ -1,0 +1,33 @@
+﻿@model IMSystemUI.Domain.ShelveType
+
+@{
+    ViewData["Title"] = "Edit ShelveType";
+}
+
+
+<div class="row">
+    <div class="container bg-opacity-100 shadow-sm">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group mb-3">
+                <label asp-for="ShelfId" class="control-label"></label>
+                <input asp-for="ShelfId" class="form-control" disabled />
+                <span asp-validation-for="ShelfId" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3">
+                <label asp-for="ShelfTag" class="control-label"></label>
+                <input asp-for="ShelfTag" class="form-control" />
+                <span asp-validation-for="ShelfTag" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3">
+                <input type="submit" value="Save" class="btn btn-light shadow-sm m-0" />
+                <a asp-action="Index" class="btn btn-outline-secondary shadow-sm">Back to List</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

@@ -1,0 +1,114 @@
+﻿@model IEnumerable<IMSystemUI.Domain.ItemEmployeeAssignment>
+@{
+    Layout = null;
+    string date = string.Empty;
+    string noneClass = string.Empty;
+}
+
+<style>
+    .row1 > div {
+        display: inline-block;
+    }
+</style>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Receipt</title>
+    <link href=~/css/rotiva.css rel="stylesheet" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+</head>
+<body>
+
+    <div class="invoice-title">
+        <span class="text-center">Item  &nbsp;  Transfer</span>
+    </div>
+
+    <div class="invoice-head clearfix">
+        <table style="border:none;">
+            <tr>
+                <td rowspan="3" width="10%" class="img-thumbnail p-1">
+                    <img src="~/Img/download.jpg" width="75%" />
+                </td>
+
+                <td class="invoice-to">
+                    <strong>Print By</strong>   Nkosana<br />
+                    0733109576<br />
+                    Test@outlook.com<br />
+                </td>
+
+                <td class="invoice-details">
+                    Print no: 123456<br />
+                    Date: @DateTime.Now.ToShortDateString()<br />
+                </td>
+
+            </tr>
+        </table>
+
+    </div>
+
+    <table class="SummaryTable clearfix">
+        <tr>
+            <th>Issuer </th>
+            <th>Receive By</th>
+            <th> @Html.DisplayNameFor(model => model.Item!.Name)</th>
+            <th> @Html.DisplayNameFor(model => model.DateTaken)</th>
+            <th> @Html.DisplayNameFor(model => model.DateReturned)</th>
+            <th>   @Html.DisplayNameFor(model => model.IsReturned)</th>
+        </tr>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@Html.DisplayFor(model => item.IssuerBy!.DisplayName)</td>
+                <td>@Html.DisplayFor(modelItem => item.ReceiverBy!.DisplayName)</td>
+                <td>@Html.DisplayFor(modelItem => item.Item!.Name)</td>
+                <td>@Html.DisplayFor(modelItem => item.DateTaken)</td>
+                <td>
+                    @{
+                        date = "n/a";
+                        if (item.DateReturned.HasValue)
+                        {
+                            date = item.DateReturned.Value.ToString();
+                        }
+
+                    }
+                    <span>@date</span>
+                </td>
+                <td>@Html.DisplayFor(modelItem => item.IsReturned)</td>
+            </tr>
+        }
+    </table>
+
+    <br />
+    &nbsp;
+    &nbsp;
+    <h3>Signature Section</h3>
+    <ul>
+        <li> @Html.DisplayNameFor(model => model.IssueSignature) .....................................................................</li>
+        <li> @Html.DisplayNameFor(model => model.ReceiverSignature) ..................................................................</li>
+
+    </ul>
+    &nbsp;
+    &nbsp;
+    <div>
+        <h3>Terms and Condition</h3>
+        <ul>
+            <li>
+                We expect our Customers to uphold the highest ethical standards within their organisations.
+                We expect our Customers to uphold the highest ethical standards within their organisations.
+                We must both comply with all applicable laws, statutes and regulations,
+                including, but not limited to, those relating to anti-bribery, anti-corruption,
+                anti-tax evasion and modern slavery (“Relevant Requirements”). You confirm you are knowledgeable
+                about these Relevant Requirements and you will comply with these Relevant Requirements,
+                together with any other policies which we may make available to you from time to time and
+                any policies and procedures you implement to the extent required by such Relevant Requirements.
+            </li>
+            <li>2</li>
+            <li>3</li>
+            <li>4</li>
+        </ul>
+    </div>
+
+</body>
+</html>
+

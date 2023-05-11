@@ -1,0 +1,63 @@
+﻿@model IEnumerable<IMSystemUI.Domain.ShelveType>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<p>
+    <a asp-action="Create" class="btn btn-light shadow-sm">Add New Shelve</a>
+</p>
+<table class="table w-100 table-striped" id="tbl">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.ShelfId)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ShelfTag)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ShelfId)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ShelfTag)
+                </td>
+                <td>
+                    <div class="btn-group" role="group" aria-label="Button group with nested dropdown">
+                        <div class="btn-group" role="group">
+                            <button id="btnGroupDrop1" type="button" class="btn btn-dark dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                                Action
+                            </button>
+                            <ul class="dropdown-menu" aria-labelledby="btnGroupDrop1">
+                                <li><a class="dropdown-item" href="/ShelveType/Edit?id=@item.ShelfId">Edit</a></li>
+                                <li><a class="dropdown-item" href="/ShelveType/Details?id=@item.ShelfId">Details</a></li>
+                                <li><a class="dropdown-item" href="/ShelveType/Delete?id=@item.ShelfId">Delete</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="#">View Report</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+@section Scripts {
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $("#tbl").DataTable({
+                dom: 'Bfrtip',
+                buttons: [
+                    'copy', 'excel', 'pdf'
+                ]
+            });
+        });
+    </script>
+}

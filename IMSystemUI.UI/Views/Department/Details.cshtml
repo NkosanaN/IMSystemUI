@@ -1,0 +1,32 @@
+﻿@model IMSystemUI.Domain.Department
+
+@{
+    ViewData["Title"] = "Details Department";
+}
+
+
+<div class="row">
+    <div class="container bg-opacity-100 shadow-sm">
+        <table class="mb-2">
+            <tbody>
+                <tr>
+                    <th class="p-2"> @Html.DisplayNameFor(model => model.DepartmentId)</th>
+                    <td>@Html.DisplayFor(model => model.DepartmentId)</td>
+                </tr>
+                <tr>
+                    <th class="p-2">@Html.DisplayNameFor(model => model.DepartmentName)</th>
+                    <td>@Html.DisplayFor(model => model.DepartmentName)</td>
+                </tr>
+                
+                <tr>
+                    <th class="p-2">@Html.DisplayNameFor(model => model.Description)</th>
+                    <td>@Html.DisplayFor(model => model.Description)</td>
+                </tr>
+            </tbody>
+        </table>
+        <div class="mb-2">
+            @Html.ActionLink("Edit", "Edit", new { id = Model.DepartmentId }, new { @class = "btn btn-light shadow-sm m-0" })
+            <a asp-action="Index" class="btn btn-outline-secondary shadow-sm">Back to List</a>
+        </div>
+    </div>
+</div>

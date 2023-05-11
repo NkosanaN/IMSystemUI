@@ -1,0 +1,115 @@
+﻿@model IMSystemUI.Domain.ItemEmployeeAssignment
+
+@{
+    ViewData["Title"] = "Create Item Transfer";
+}
+
+<style>
+    .nav-pills .nav-link.active, .nav-pills .show > .nav-link {
+        color: #fff;
+        background-color: #676e79;
+    }
+</style>
+
+@*<h4>Create Item Transfer</h4>*@
+<div class="row">
+    <ul class="nav nav-pills" id="pills-tab" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active shadow-sm mb-3 m-0" id="pills-home-tab" data-bs-toggle="pill" data-bs-target="#pills-home" type="button" role="tab" aria-controls="pills-home" aria-selected="true">Manual Transfer</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link shadow-sm" id="pills-profile-tab" data-bs-toggle="pill" data-bs-target="#pills-profile" type="button" role="tab" aria-controls="pills-profile" aria-selected="false">Scanner</button>
+        </li>
+    </ul>
+    <div class="tab-content" id="pills-tabContent">
+        <div class="tab-pane fade show active" id="pills-home" role="tabpanel" aria-labelledby="pills-home-tab">
+            <div class="shadow-sm mb-3">
+                <form asp-action="Create">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                    <div class="row  mb-3">
+                        <div class="form-group col-6">
+                            <select asp-for="ItemId" class="js-example-basic-single js-states form-control" asp-items="@ViewBag.itemList" tabindex="-1">
+                                <option disabled selected>-Select Item-</option>
+                            </select>
+                            <span asp-validation-for="ItemId" class="text-danger"></span>
+                        </div>
+                        <div class="form-group col-6">
+                            @*<select asp-for="ItemId" class="js-example-basic-single js-states form-control" asp-items="@ViewBag.issuerList" tabindex="-1">
+                            <option disabled selected>-Select Item-</option>
+                            </select>
+                            <span asp-validation-for="ItemId" class="text-danger"></span>*@
+                        </div>
+                    </div>
+
+                    @*            <div class="row  mb-3">
+                    <div class="form-group col-6">
+                    <label asp-for="IssuerBy" class="control-label"></label>
+                    <select asp-for="ItemId" class="js-example-basic-single js-states form-control" asp-items="@ViewBag.issuerList" tabindex="-1">
+                    <option disabled selected>-Select Item-</option>
+                    </select>
+                    <span asp-validation-for="ItemId" class="text-danger"></span>
+                    </div>
+                    <div class="form-group col-6">
+                    <label asp-for="IssueSignature" class="control-label"></label>
+                    <input asp-for="IssueSignature" class="form-control" />
+                    <span asp-validation-for="IssueSignature" class="text-danger"></span>
+                    </div>
+                    </div>*@
+
+                    <div class="row  mb-3">
+                        <div class="form-group col-6">
+                            <label asp-for="DateTaken" class="control-label"></label>
+                            <input asp-for="DateTaken" class="form-control" />
+                            <span asp-validation-for="DateTaken" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group col-6">
+                            <label asp-for="DateReturned" class="control-label"></label>
+                            <input asp-for="DateReturned" class="form-control" />
+                            <span asp-validation-for="DateReturned" class="text-danger"></span>
+                        </div>
+                    </div>
+
+
+                    <div class="row  mb-4">
+                        <div class="form-group col-6">
+                            <label asp-for="ReturnedCondition" class="control-label"></label>
+                            <textarea style="height: 100%; width: 100%" rows="5" class="form-control" asp-for="ReturnedCondition" id="validationTextarea" placeholder="Please provide Return Condition" required></textarea>
+
+                            <span asp-validation-for="ReturnedCondition" class="text-danger"></span>
+                        </div>
+                        <div class="form-group col-6">
+                            <label asp-for="ResonForNotReturn" class="control-label"></label>
+                            <textarea style="height: 100%; width: 100%" rows="5" class="form-control" asp-for="ResonForNotReturn" id="validationTextarea" placeholder="Please provide Reason For Not Returning Item" required></textarea>
+                            <span asp-validation-for="ResonForNotReturn" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="form-group form-check mb-3">
+                        <label class="form-check-label">
+                            <input class="form-check-input" asp-for="IsReturned" /> @Html.DisplayNameFor(model => model.IsReturned)
+                        </label>
+                    </div>
+                    <div class="form-group mb-4">
+                        <input type="submit" value="Create" class="btn btn-light shadow-sm m-2" />
+                        <a asp-action="Index" class="btn btn-outline-secondary shadow-sm">Back to List</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="tab-pane fade" id="pills-profile" role="tabpanel" aria-labelledby="pills-profile-tab">...</div>
+        <div class="tab-pane fade" id="pills-contact" role="tabpanel" aria-labelledby="pills-contact-tab">...</div>
+    </div>
+</div>
+
+@section Scripts {
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('.js-example-basic-single ').select2();
+        })
+    </script>
+
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

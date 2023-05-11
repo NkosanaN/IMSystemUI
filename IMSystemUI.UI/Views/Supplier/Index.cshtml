@@ -1,0 +1,74 @@
+﻿@model IEnumerable<IMSystemUI.Domain.Supplier>
+
+@{
+    //  Layout = "~/Views/Shared/_LayoutDashboard.cshtml";
+    ViewData["Title"] = "Index";
+
+}
+@*
+<h1>Index</h1>*@
+
+<p>
+    <a asp-action="Create" class="btn btn-light shadow-sm">Add New Supplier</a>
+</p>
+<table class="table w-100 table-striped" id="tbl">
+    <thead>
+        <tr>
+            <th hidden>
+                @Html.DisplayNameFor(model => model.SupplierId)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.SupplierName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.SupplierDescription)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.BookingDate)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td hidden>
+                    @Html.DisplayFor(modelItem => item.SupplierId)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.SupplierName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.SupplierDescription)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.BookingDate)
+                </td>
+                <td>
+                    <div class="btn-group" role="group" aria-label="Button group with nested dropdown">
+                        <div class="btn-group" role="group">
+                            <button id="btnGroupDrop1" type="button" class="btn btn-dark dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                                Action
+                            </button>
+                            <ul class="dropdown-menu" aria-labelledby="btnGroupDrop1">
+                                <li><a class="dropdown-item" href="/Supplier/Edit?id=@item.SupplierId">Edit</a></li>
+                                <li><a class="dropdown-item" href="/Supplier/Details?id=@item.SupplierId">Details</a></li>
+                                <li><a class="dropdown-item" href="/Supplier/Delete?id=@item.SupplierId">Delete</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="#">View Report</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    </td>
+            </tr>
+        }
+    </tbody>
+</table>
+@section Scripts {
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $("#tbl").DataTable();
+        });
+    </script>
+}

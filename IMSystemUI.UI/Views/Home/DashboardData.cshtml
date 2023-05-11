@@ -1,0 +1,171 @@
+﻿@model int[]
+@{
+    ViewData["Title"] = "Dashboard";
+}
+<div class="row">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                @*      <h1 style="text-align: center">Dashbord</h1>*@
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6 m-0">
+                <div class="card " style="height: 400px">
+                    <div class="card-body">
+                        <canvas id="myChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="card" style="height: 400px">
+                    <div class="card-body">
+                        <canvas id="myChart1"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-3">
+            <div class="col-md-6">
+                <div class="card" style="height: 400px">
+                    <div class="card-body container-fluid">
+                        <div class="card text-white bg-secondary ">
+                            <div class="card-header">Pending</div>
+                            <div class="card-body">
+                                <h5 class="card-title">0</h5>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="card" style="height: 400px">
+                    <div class="card-body container-fluid">
+                        <div class="card">
+                            <div class="card-body">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+@section Scripts {
+
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script>
+        const plugin = {
+            id: 'customCanvasBackgroundColor',
+            beforeDraw: (chart, args, options) => {
+                const { ctx } = chart;
+                ctx.save();
+                ctx.globalCompositeOperation = 'destination-over';
+                ctx.fillStyle = options.color || '#99ffff';
+                ctx.fillRect(0, 0, chart.width, chart.height);
+                ctx.restore();
+            }
+        };
+
+        const ctx = document.getElementById('myChart');
+
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
+                datasets: [{
+                    label: '# of Departments',
+                    data: [12, 19, 3, 5, 2, 3],
+                    borderWidth: 1                   
+                }]
+            }            ,
+            options: {
+                plugins: {
+                    customCanvasBackgroundColor: {
+                        color: 'Grey',
+                    }
+                }
+            },
+            plugins: [plugin],
+        });
+
+        const ctx1 = document.getElementById('myChart1');
+
+        new Chart(ctx1, {
+            type: 'doughnut',
+            data: {
+              
+                datasets: [{
+                    label: 'My First Dataset',
+                    data: [12, 19, 3, 5, 2, 3],
+                    borderWidth: 1,
+                    backgroundColor: [
+                        'rgb(255, 99, 132)',
+                        'rgb(54, 162, 235)',
+                        'rgb(255, 205, 86)'
+                    ],
+                    hoverOffset: 4
+                }]
+            }
+            //,
+            //options: {
+            //    plugins: {
+            //        customCanvasBackgroundColor: {
+            //            color: 'lightGreen',
+            //        }
+            //    }
+            //},
+            //plugins: [plugin],
+        });
+    </script>
+
+    @*
+    <script>
+        $(function ()
+        {
+            $.ajax({
+                url: '@Url.Action("DashboardData", "Home")',
+                method: 'GET',
+                success: function (data) {
+                    console.log(data)
+                //    var chartData = {
+                //        labels: ['@DateTime.Today.AddDays(-6).ToShortDateString()', '@DateTime.Today.AddDays(-5).ToShortDateString()', '@DateTime.Today.AddDays(-4).ToShortDateString()', '@DateTime.Today.AddDays(-3).ToShortDateString()', '@DateTime.Today.AddDays(-2).ToShortDateString()', '@DateTime.Today.AddDays(-1).ToShortDateString()', '@DateTime.Today.ToShortDateString()'],
+                //        datasets: [
+                //            {
+                //                label: 'Items Transferred',
+                //                data: data,
+                //                backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                //                borderColor: 'rgba(54, 162, 235, 1)',
+                //                borderWidth: 1,
+                //            },
+                //        ],
+                //    };
+
+                //    var chartOptions = {
+                //        scales: {
+                //            y: {
+                //                beginAtZero: true,
+                //            },
+                //        },
+                //    };
+
+                //    var chart = new Chart($('#chart'), {
+                //        type: 'bar',
+                //        data: chartData,
+                //        options: chartOptions,
+                //    });
+                //},
+            }
+        });
+
+</script>*@
+
+}
+

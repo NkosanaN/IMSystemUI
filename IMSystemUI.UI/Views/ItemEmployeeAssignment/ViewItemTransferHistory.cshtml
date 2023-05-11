@@ -1,0 +1,71 @@
+﻿@model IEnumerable<IMSystemUI.Domain.ItemEmployeeAssignment>
+
+@{
+    ViewData["Title"] = "History Item Transfer";
+    string returnCondiction = string.Empty;
+    string reasonForNotReturn = string.Empty;
+    string date = string.Empty;
+    string noneClass = string.Empty;
+    string isReturn = string.Empty;
+    Guid assetId = (Guid)ViewBag.StoreAssetId;
+}
+
+@*<h4>Details</h4>*@
+
+<div>
+    <table class="table rounded table-bordered shadow-lg">
+        <thead class="alert-heading" style="background-color: #676e79;color: #fff">
+            <tr>
+                <th>@Html.DisplayNameFor(model => model.IssuerBy!.DisplayName)</th>
+                <th style="width: 2%"></th>
+                <th> @Html.DisplayNameFor(model => model.ReceiverBy!.DisplayName) </th>
+                <th> @Html.DisplayNameFor(model => model.Item!.Name)</th>
+                <th> @Html.DisplayNameFor(model => model.DateTaken)</th>
+                <th> @Html.DisplayNameFor(model => model.DateReturned)</th>
+                <th>   @Html.DisplayNameFor(model => model.IsReturned)</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@Html.DisplayFor(model => item.IssuerBy!.DisplayName)</td>
+                    <td> <span><i class="fa fa-arrow-circle-right" aria-hidden="true"></i></span> </td>
+                    <td>@Html.DisplayFor(modelItem => item.ReceiverBy!.DisplayName)</td>
+                    <td>@Html.DisplayFor(modelItem => item.Item!.Name)</td>
+                    <td>@Html.DisplayFor(modelItem => item.DateTaken)</td>
+                    <td>
+                        @{
+                            noneClass = "fa fa-times text-center";
+                            if (item.DateReturned.HasValue)
+                            {
+                                date = item.DateReturned.Value.ToString();
+                                noneClass = string.Empty;
+                            }
+
+                        }
+                        <span><i class="@noneClass" aria-hidden="true">@date</i></span>
+                    </td>
+                    <td>
+                        @{
+                            isReturn = "fa fa-times-circle";
+                            if (item.IsReturned)
+                            {
+                                isReturn = "fa fa-check-circle text-center";
+                            }
+
+                        }
+                        <span><i class="@isReturn" aria-hidden="true"></i></span>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <div class="form-group mb-3">
+        <a asp-action="PrintToPdf" asp-controller="ItemEmployeeAssignment" asp-route-id="@assetId" class="btn btn-outline-dark shadow-sm m-0m">Pdf Print</a>
+        &nbsp;
+        <a asp-action="Index" class="btn btn-outline-secondary shadow-sm">Back to List</a>
+    </div>
+</div>
+
+
