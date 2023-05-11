@@ -2,7 +2,7 @@
 @{
     ViewData["Title"] = "Index";
     string isReturn = string.Empty;
-    string date = string.Empty;
+        string date = string.Empty;
     string noneClass = string.Empty;
 }
 
@@ -17,10 +17,10 @@
                 @Html.DisplayNameFor(model => model.AssigmentId)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.IssuerBy!.DisplayName)
+               Issuer
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.ReceiverBy!.DisplayName)
+                Receiver
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.Item!.Name)
