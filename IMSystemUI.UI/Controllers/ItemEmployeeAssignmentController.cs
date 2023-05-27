@@ -1,45 +1,62 @@
-﻿using IMSystemUI.Domain;
+﻿using DocumentFormat.OpenXml.Math;
+using IMSystemUI.Domain;
 using IMSystemUI.Service.Interfaces;
+using IMSystemUI.UI.Helpers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Rotativa.AspNetCore;
 
 namespace IMSystemUI.UI.Controllers
 {
-    public class ItemEmployeeAssignmentController : Controller
+    public class ItemEmployeeAssignmentController : BaseController
     {
-        private readonly IHttpClientExtensions _client;
-        public IEnumerable<SelectListItem> ItemsList { get; set; }
-        public IEnumerable<SelectListItem> UserList { get; set; }
-        public ItemEmployeeAssignmentController(IHttpClientExtensions client)
+        private readonly IItemEmployeeAssignmentService _itemEmployeeAssignmentSrv;
+        private readonly IItemService _itemSrv;
+        private readonly IUserService _userSrv;
+
+        public IEnumerable<SelectListItem>? ItemsList { get; set; }
+        public IEnumerable<SelectListItem>? UserList { get; set; }
+
+        public ItemEmployeeAssignmentController(IItemEmployeeAssignmentService itemEmployeeAssignmentSrv, IItemService itemSrv, IUserService userSrv)
         {
-            _client = client;
+            _itemEmployeeAssignmentSrv = itemEmployeeAssignmentSrv;
+            _itemSrv = itemSrv;
+            _userSrv = userSrv;
         }
 
         // GET: ItemEmployeeAssignmentController
         public async Task<ActionResult> Index()
         {
-            var data = await _client.GetAllAsync<ItemEmployeeAssignment>();
+            var data =
+                await _itemEmployeeAssignmentSrv.GetAllItemEmployeeAssignmentsAsync();
+
             return View(data);
         }
 
         // GET: ItemEmployeeAssignmentController/Details/5
         public async Task<ActionResult> Details(Guid id)
         {
-           var data = await _client.GetByIdAsync<ItemEmployeeAssignment>(id);
+            var data =
+                await _itemEmployeeAssignmentSrv.GetAllItemEmployeeAssignmentAsync(id);
+
             return View(data);
         }
         public async Task<ActionResult> ViewItemTransferHistory(Guid id)
         {
-            var data = await _client.GetAllAsync<ItemEmployeeAssignment>();
+            var data =
+                await _itemEmployeeAssignmentSrv.GetAllItemEmployeeAssignmentsAsync();
+
             var query = data.Where(x => x.ItemId == id).ToList();
             ViewBag.StoreAssetId = id;
+
             return View(query);
         }
 
         public async Task<ActionResult> PrintToPdf(Guid id)
         {
-            var data = await _client.GetAllAsync<ItemEmployeeAssignment>();
+            var data =
+                await _itemEmployeeAssignmentSrv.GetAllItemEmployeeAssignmentsAsync();
+
             var query = data.Where(x => x.ItemId == id).ToList();
 
             var potrait = new ViewAsPdf(query)
@@ -50,23 +67,30 @@ namespace IMSystemUI.UI.Controllers
             };
             return potrait;
 
-            
+
         }
         // GET: ItemEmployeeAssignmentController/Create
         public async Task<ActionResult> Create()
         {
-           var loadItems = await  _client.GetAllAsync<Item>();
-           
-           //var loadUsers = await _client.GetAllAsync<User>();
+            var loadItems = await _itemSrv.GetAllItemsAsync();
 
-           // var dataUser = loadUsers.AsQueryable().Select(x => new { Value = x.Id, Text = x.DisplayName }).ToList();
-            var dataItem = loadItems.AsQueryable().Select(x => new { Value = x.ItemId , Text = x.Name }).ToList();
+            var loadUsers = await _userSrv.GetAllUsersAsync();
 
-            //UserList = dataUser.Select(i => new SelectListItem
-            //{
-            //    Text = i.Text,
-            //    Value = i.Value!.ToString()
-            //});
+            var dataUser = loadUsers
+                .AsQueryable()
+                .Select(x => new { Value = x.Id, Text = $"{x.Firstname} - ({x.Lastname})" })
+                .ToList();
+
+            var dataItem = loadItems
+                .AsQueryable()
+                .Select(x => new { Value = x.ItemId, Text = x.Name })
+                .ToList();
+
+            UserList = dataUser.Select(i => new SelectListItem
+            {
+                Text = i.Text,
+                Value = i.Value!.ToString()
+            });
 
             ItemsList = dataItem.Select(i => new SelectListItem
             {
@@ -74,7 +98,8 @@ namespace IMSystemUI.UI.Controllers
                 Value = i.Value!.ToString()
             });
 
-            // ViewBag.issuerList = UserList;
+            ViewBag.issuerList = UserList;
+
             ViewBag.itemList = ItemsList;
 
             var model = new ItemEmployeeAssignment
@@ -94,37 +119,62 @@ namespace IMSystemUI.UI.Controllers
         {
             try
             {
-                await _client.CreateAsync(model);
+                //string s = "72901290-6252-4b60-b8fe-c07d9d73029c";
+
+                //Guid.(s, r )
+                //model.IssuerBy!.Id = 
+                await _itemEmployeeAssignmentSrv.CreateItemEmployeeAssignmentAsync(model);
+
+                Notify($"Successful created new item transfer to {model.ReceiverBy!.Firstname}-{model.ReceiverBy.Lastname} .", type: NotificationType.success);
+
                 return RedirectToAction(nameof(Index));
             }
-            catch
+            catch (Exception ex)
             {
+                const string msg = ResponseMessageCodes.ErrorMsg;
+                var errorDescription = ResponseMessageCodes.ErrorDictionary[msg];
+
+                Notify(errorDescription, type: NotificationType.error);
+
                 return View();
             }
         }
 
         // GET: ItemEmployeeAssignmentController/Edit/5
-        public async Task<ActionResult> Edit(Guid id , Guid itemId)
+        public async Task<ActionResult> Edit(Guid id, Guid itemId)
         {
-            //var loadItems = await _client.GetAllAsync<Item>();
+            var loadItems = await _itemSrv.GetAllItemsAsync();
 
-            //var dataItem = loadItems
-            //    .AsQueryable()
-            //    .Where(x=>x.ItemId == itemId)
-            //    .Select(x => new { Value = x.ItemId, Text = x.Name })
-            //    .ToList();
+            var loadUsers = await _userSrv.GetAllUsersAsync();
 
-            //ItemsList = dataItem.Select(i => new SelectListItem
-            //{
-            //    Text = i.Text,
-            //    Value = i.Value!.ToString()
-            //});
+            var dataUser = loadUsers
+                .AsQueryable()
+                .Select(x => new { Value = x.Id, Text = $"{x.Firstname} - ({x.Lastname})"})
+                .ToList();
 
-            // ViewBag.issuerList = UserList;
+            var dataItem = loadItems
+                .AsQueryable()
+                .Select(x => new { Value = x.ItemId, Text = x.Name })
+                .ToList();
+
+            UserList = dataUser.Select(i => new SelectListItem
+            {
+                Text = i.Text,
+                Value = i.Value!.ToString()
+            });
+
+            ItemsList = dataItem.Select(i => new SelectListItem
+            {
+                Text = i.Text,
+                Value = i.Value!.ToString()
+            });
+
+            ViewBag.issuerList = UserList;
+
             ViewBag.itemList = ItemsList;
 
+            var data = await _itemEmployeeAssignmentSrv.GetAllItemEmployeeAssignmentAsync(id);
 
-            var data = await _client.GetByIdAsync<ItemEmployeeAssignment>(id);
             return View(data);
         }
 
@@ -144,18 +194,22 @@ namespace IMSystemUI.UI.Controllers
         }
 
         // GET: ItemEmployeeAssignmentController/Delete/5
-        public ActionResult Delete(int id)
+        public async Task<ActionResult> Delete(Guid id)
         {
-            return View();
+            var data =
+                await _itemEmployeeAssignmentSrv.GetAllItemEmployeeAssignmentAsync(id);
+
+            return View(data);
         }
 
         // POST: ItemEmployeeAssignmentController/Delete/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
+        public async Task<ActionResult> Delete(Guid id, IFormCollection collection)
         {
             try
             {
+                await _itemEmployeeAssignmentSrv.RemoveItemEmployeeAssignmentAsync(id);
                 return RedirectToAction(nameof(Index));
             }
             catch

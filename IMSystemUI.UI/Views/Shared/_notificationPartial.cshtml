@@ -1,0 +1,27 @@
+﻿<script>
+
+    var msg = @(TempData["Message"] != null ? Html.Raw(TempData["Message"]) : Html.Raw("undefined"));
+
+    console.log(msg);
+
+    if (msg) {
+        if (msg.provider == "sweertAlert") {
+            swal.fire({
+                title: msg.title,
+                text: msg.text,
+                icon: msg.icon,
+                showClass: {
+                    popup: 'animate__animated animate__fadeInDown'
+                },
+                hideClass: {
+                    popup: 'animate__animated animate__fadeOutUp'
+                }
+            });
+        }
+        else {
+            toastr[msg.type](msg.text, msg.title);
+        }
+    }
+
+
+</script>

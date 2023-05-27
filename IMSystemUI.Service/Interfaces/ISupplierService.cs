@@ -4,9 +4,9 @@ namespace IMSystemUI.Service.Interfaces;
 public interface ISupplierService
 {
     Task<IEnumerable<Supplier>> GetAllSupplierAsync();
-    //Task<IEnumerable<Post>> GetAllSupplierAsync();
-    Task<Supplier> GetSupplierAsync();
-    Task CreateSupplierAsync(Supplier supplier);
-    Task<Supplier> RemoveSupplierAsync();
+    Task<Supplier> GetSupplierAsync(Guid id);
+    Task<Supplier> CreateSupplierAsync(Supplier supplier);
+    Task UpdateSupplierAsync(Guid id, Supplier supplier);
+    Task RemoveSupplierAsync(Guid id);
 
 }

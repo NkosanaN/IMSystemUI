@@ -1,29 +1,31 @@
-﻿using IMSystemUI.Domain;
+﻿using DocumentFormat.OpenXml.EMMA;
+using IMSystemUI.Domain;
 using IMSystemUI.Service.Interfaces;
+using IMSystemUI.UI.Helpers;
 using Microsoft.AspNetCore.Mvc;
-using System.Reflection;
 
 namespace IMSystemUI.UI.Controllers
 {
-    public class SupplierController : Controller
+    public class SupplierController : BaseController
     {
-        private readonly IHttpClientExtensions _client;
-        public SupplierController(IHttpClientExtensions client)
+        private readonly ISupplierService _supplierSrv;
+        public SupplierController(ISupplierService supplierSrv)
         {
-            _client = client;
+            _supplierSrv = supplierSrv;
         }
 
         // GET: SupplierController
         public async Task<ActionResult> Index()
         {
-            var data = await _client.GetAllAsync<Supplier>();
+            var data = await _supplierSrv.GetAllSupplierAsync();
             return View(data);
         }
 
         // GET: SupplierController/Details/5
         public async Task<ActionResult> Details(Guid id)
         {
-            var data = await _client.GetByIdAsync<Supplier>(id);
+            var data = await _supplierSrv.GetSupplierAsync(id);
+
             return View(data);
         }
 
@@ -40,11 +42,19 @@ namespace IMSystemUI.UI.Controllers
         {
             try
             {
-                await _client.CreateAsync(model);
+                await _supplierSrv.CreateSupplierAsync(model);
+
+                Notify("Successful created new supplier .", type: NotificationType.success);
+
                 return RedirectToAction(nameof(Index));
             }
-            catch
+            catch (Exception ex)
             {
+                const string msg = ResponseMessageCodes.ErrorMsg;
+                var errorDescription = ResponseMessageCodes.ErrorDictionary[msg];
+
+                Notify(errorDescription, type: NotificationType.error);
+
                 return View();
             }
         }
@@ -52,22 +62,33 @@ namespace IMSystemUI.UI.Controllers
         // GET: SupplierController/Edit/5
         public async Task<ActionResult> Edit(Guid id)
         {
-            var data = await _client.GetByIdAsync<Supplier>(id);
+            var data = await _supplierSrv.GetSupplierAsync(id);
+
+
+
             return View(data);
         }
 
         // POST: SupplierController/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Edit(Guid id, Supplier model)
+        public async Task<ActionResult> Edit(Guid SupplierId, Supplier model)
         {
             try
             {
-                await _client.UpdateAsync(id, model);
+                await _supplierSrv.UpdateSupplierAsync(SupplierId, model);
+
+                Notify("supplier info .", "Successful updated supplier.", type: NotificationType.info);
+
                 return RedirectToAction(nameof(Index));
             }
-            catch
+            catch(Exception ex)
             {
+                const string msg = ResponseMessageCodes.ErrorMsg;
+                var errorDescription = ResponseMessageCodes.ErrorDictionary[msg];
+
+                Notify(errorDescription, type: NotificationType.error);
+
                 return View();
             }
         }
@@ -75,7 +96,8 @@ namespace IMSystemUI.UI.Controllers
         // GET: SupplierController/Delete/5
         public async Task<ActionResult> Delete(Guid id)
         {
-            var data = await _client.GetByIdAsync<Supplier>(id);
+            var data = await _supplierSrv.GetSupplierAsync(id);
+
             return View(data);
         }
 
@@ -86,7 +108,10 @@ namespace IMSystemUI.UI.Controllers
         {
             try
             {
-                await _client.DeleteAsync(id);
+                await _supplierSrv.RemoveSupplierAsync(id);
+                
+                Notify("Successful removed supplier .", type: NotificationType.info);
+
                 return RedirectToAction(nameof(Index));
             }
             catch

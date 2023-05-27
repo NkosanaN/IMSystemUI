@@ -10,6 +10,10 @@
         "chart.js",
         "helpers.min.js"
       ]
+    },
+    {
+      "library": "datatables@1.10.21",
+      "destination": "wwwroot/lib/datatables/"
     }
   ]
 }

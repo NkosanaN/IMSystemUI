@@ -2,8 +2,10 @@
 
 @{
     ViewData["Title"] = "Index";
+    Layout = "_LayoutDashboard";
 }
-
+<h1>@ViewData["Title"]</h1>
+<hr />
 <p>
     <a asp-action="Create" class="btn btn-light shadow-sm">Add New Department</a>
 </p>
@@ -60,10 +62,7 @@
     <script type="text/javascript">
         $(document).ready(function () {
             $("#tbl").DataTable({
-                dom: 'Bfrtip',
-                buttons: [
-                    'copy', 'excel', 'pdf'
-                ]
+                dom: 'frtipP'
             });
         });
     </script>

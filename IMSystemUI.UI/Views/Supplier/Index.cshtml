@@ -1,13 +1,10 @@
 ﻿@model IEnumerable<IMSystemUI.Domain.Supplier>
 
 @{
-    //  Layout = "~/Views/Shared/_LayoutDashboard.cshtml";
-    ViewData["Title"] = "Index";
-
+    ViewData["Title"] = "Supplier";
+    Layout = "_LayoutDashboard";
 }
-@*
-<h1>Index</h1>*@
-
+<h1>@ViewData["Title"]</h1>
 <p>
     <a asp-action="Create" class="btn btn-light shadow-sm">Add New Supplier</a>
 </p>
@@ -55,8 +52,8 @@
                                 <li><a class="dropdown-item" href="/Supplier/Edit?id=@item.SupplierId">Edit</a></li>
                                 <li><a class="dropdown-item" href="/Supplier/Details?id=@item.SupplierId">Details</a></li>
                                 <li><a class="dropdown-item" href="/Supplier/Delete?id=@item.SupplierId">Delete</a></li>
-                                <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item" href="#">View Report</a></li>
+@*                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="#">View Report</a></li>*@
                             </ul>
                         </div>
                     </div>

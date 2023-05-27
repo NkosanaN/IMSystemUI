@@ -8,30 +8,31 @@
     string noneClass = string.Empty;
     string isReturn = string.Empty;
     Guid assetId = (Guid)ViewBag.StoreAssetId;
+    Layout = "_LayoutDashboard";
 }
 
-@*<h4>Details</h4>*@
+<h1>@ViewData["Title"]</h1>
 
 <div>
     <table class="table rounded table-bordered shadow-lg">
         <thead class="alert-heading" style="background-color: #676e79;color: #fff">
             <tr>
-                <th>@Html.DisplayNameFor(model => model.IssuerBy!.DisplayName)</th>
+                <th>IssuerBy</th>
                 <th style="width: 2%"></th>
-                <th> @Html.DisplayNameFor(model => model.ReceiverBy!.DisplayName) </th>
-                <th> @Html.DisplayNameFor(model => model.Item!.Name)</th>
-                <th> @Html.DisplayNameFor(model => model.DateTaken)</th>
-                <th> @Html.DisplayNameFor(model => model.DateReturned)</th>
-                <th>   @Html.DisplayNameFor(model => model.IsReturned)</th>
+                <th>ReceiverBy</th>
+                <th>@Html.DisplayNameFor(model => model.Item!.Name)</th>
+                <th>@Html.DisplayNameFor(model => model.DateTaken)</th>
+                <th>@Html.DisplayNameFor(model => model.DateReturned)</th>
+                <th style="width: 7%">@Html.DisplayNameFor(model => model.IsReturned)</th>
             </tr>
         </thead>
         <tbody>
             @foreach (var item in Model)
             {
                 <tr>
-                    <td>@Html.DisplayFor(model => item.IssuerBy!.DisplayName)</td>
+                    <td>@item.IssuerBy!.Firstname - @item.IssuerBy.Lastname (@Html.DisplayFor(model => item.IssuerBy!.UserName))</td>
                     <td> <span><i class="fa fa-arrow-circle-right" aria-hidden="true"></i></span> </td>
-                    <td>@Html.DisplayFor(modelItem => item.ReceiverBy!.DisplayName)</td>
+                    <td>@item.ReceiverBy!.Firstname - @item.ReceiverBy.Lastname (@Html.DisplayFor(modelItem => item.ReceiverBy!.UserName))</td>
                     <td>@Html.DisplayFor(modelItem => item.Item!.Name)</td>
                     <td>@Html.DisplayFor(modelItem => item.DateTaken)</td>
                     <td>

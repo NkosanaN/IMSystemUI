@@ -11,12 +11,11 @@ public  class HttpClientExtensions : IHttpClientExtensions
 {
     private readonly HttpClient _httpClient;
     private readonly IHttpContextAccessor _httpContextAccessor;
-    readonly string bearerToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6InRlc3QxMjNAZ21haWwuY29tIiwibmFtZWlkIjoiZTkxZWJiYWMtMmY5NC00NTY5LTg1YzktZDVhZDk2YmYxODExIiwiZW1haWwiOiJ0ZXN0MTIzQGdtYWlsLmNvbSIsIm5iZiI6MTY4MzU0Mzc5NCwiZXhwIjoxNjg0MTQ4NTk0LCJpYXQiOjE2ODM1NDM3OTR9.MYx48wDubgIrgJkhxd4fQqjtnhtRVSBApF6K3EIESO4";
+    readonly string bearerToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6InRlc3QxMjNAZ21haWwuY29tIiwibmFtZWlkIjoiZTkxZWJiYWMtMmY5NC00NTY5LTg1YzktZDVhZDk2YmYxODExIiwiZW1haWwiOiJ0ZXN0MTIzQGdtYWlsLmNvbSIsIm5iZiI6MTY4NDQzODc2NCwiZXhwIjoxNjg1MDQzNTY0LCJpYXQiOjE2ODQ0Mzg3NjR9.vSCEWHqpv1vwoJzJ37sCe3Jq_RJ7fBEKkXZW1tsd96Q";
     private readonly string _baseURL = "http://localhost:5293/api";
     public HttpClientExtensions(HttpClient httpClient, IHttpContextAccessor httpContextAccessor)
     {
         _httpClient = httpClient;
-       
         _httpContextAccessor = httpContextAccessor;
     }
 
@@ -61,6 +60,16 @@ public  class HttpClientExtensions : IHttpClientExtensions
         var request = new HttpRequestMessage(HttpMethod.Post, typeof(T).Name.ToLower());
         request.Content = new StringContent(content, Encoding.UTF8, "application/json");
         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", GetBearerToken());
+        
+        var controllerName = typeof(T);
+        //var controller = controllerName.Name;
+        var controller = "Account/login";
+
+
+        _httpClient.BaseAddress = new Uri($"{_baseURL}/{controller}");
+
+        if (_httpClient.BaseAddress == null)
+            _httpClient.BaseAddress = new Uri($"{_baseURL}/{controller}");
 
         var response = await _httpClient.SendAsync(request);
         response.EnsureSuccessStatusCode();

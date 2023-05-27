@@ -1,0 +1,186 @@
+﻿@model IEnumerable<IMSystemUI.Domain.Item>
+
+@{
+    ViewData["Title"] = "item";
+    string isReturn = string.Empty;
+    string none = string.Empty;
+    Layout = "_LayoutDashboard";
+}
+<h1>Items Linked to shelve (@ViewBag.shalftag)</h1>
+<div class="row">
+    <nav>
+        <div class="nav nav-tabs" id="nav-tab" role="tablist">
+            <button class="nav-link active" id="nav-home-tab" data-bs-toggle="tab" data-bs-target="#nav-home" type="button" role="tab" aria-controls="nav-home" aria-selected="true">Home</button>
+            <button class="nav-link" id="nav-profile-tab" data-bs-toggle="tab" data-bs-target="#nav-profile" type="button" role="tab" aria-controls="nav-profile" aria-selected="false">Export Excel</button>
+            <button class="nav-link" id="nav-contact-tab" data-bs-toggle="tab" data-bs-target="#nav-contact" type="button" role="tab" aria-controls="nav-contact" aria-selected="false">Import Excel</button>
+        </div>
+    </nav>
+    <div class="tab-content" id="nav-tabContent">
+        <div class="tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab">
+            <p class="mt-3">
+                <a asp-action="Create" class="btn btn-light shadow-sm">Add New Item</a>
+            </p>
+            <table class="table w-100 table-striped" id="tbl">
+                <thead>
+                <tr>
+                    <th hidden>
+                        @Html.DisplayNameFor(model => model.ItemId)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Serialno)
+                    </th>
+                    <th hidden>
+                        @Html.DisplayNameFor(model => model.TimeStamp)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Name)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Description)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.ItemTag)
+                    </th>
+                    <th hidden>
+                        @Html.DisplayNameFor(model => model.Cost)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Qty)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.DatePurchased)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.DueforRepair)
+                    </th>
+                    <th></th>
+                </tr>
+                </thead>
+                <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td hidden>
+                            @Html.DisplayFor(modelItem => item.ItemId)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Serialno)
+                        </td>
+                        <td hidden>
+                            @Html.DisplayFor(modelItem => item.TimeStamp)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Name)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Description)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.ItemTag)
+                            @*   <a href="/ShelveType/Details?id=@item.ItemId">@item.ItemTag</a>*@
+                        </td>
+                        <td hidden>
+                            @Html.DisplayFor(modelItem => item.Cost)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Qty)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.DatePurchased)
+                        </td>
+                        <td>
+                            @{
+                                isReturn = item.DueforRepair ? "fa fa-check-circle" : "fa fa-times-circle text-center";
+                            }
+                            <span><i class="@isReturn" aria-hidden="true"></i></span>
+                        </td>
+                        <td>
+                            <div class="btn-group" role="group" aria-label="Button group with nested dropdown">
+                                <div class="btn-group" role="group">
+                                    <button id="btnGroupDrop1" type="button" class="btn btn-dark dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                                        Action
+                                    </button>
+                                    <ul class="dropdown-menu" aria-labelledby="btnGroupDrop1">
+                                        <li><a class="dropdown-item" href="/Item/Edit?id=@item.ItemId">Edit</a></li>
+                                        <li><a class="dropdown-item" href="/Item/Details?id=@item.ItemId">Details</a></li>
+                                        <li><a class="dropdown-item" href="/Item/Delete?id=@item.ItemId">Delete</a></li>
+                                        <li><hr class="dropdown-divider"></li>
+                                        <li><a class="dropdown-item" asp-action="Create" asp-controller="ItemEmployeeAssignment"  >Item Transfer</a></li>
+                                        <li>@{ none = "dropdown-item"; /*item.DueforRepair ? "dropdown-item" : "dropdown-item d-none";*/ }
+                                            <a class="@none" href="#" data-bs-toggle="modal" data-bs-target="#staticBackdrop"><span>Book for Repair</span></a>
+                                        </li>
+                                        <li><hr class="dropdown-divider"></li>
+                                        <li><a class="dropdown-item" href="#">View Item History</a></li>
+                                      
+                                    </ul>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+        <div class="tab-pane fade" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab">
+            <p class="mt-3">
+                <a asp-action="DownloadExcelTemplate" class="btn btn-light shadow-sm">Download Excel Template</a>
+            </p>
+        </div>
+        <div class="tab-pane fade" id="nav-contact" role="tabpanel" aria-labelledby="nav-contact-tab">
+            <div class="row">
+                <div class="col-md-12 mt-3">
+                    <form method="post" id="create-form" enctype="multipart/form-data">
+                        <div class="form-group">
+                            <label class="control-label">
+                                Upload File:
+                            </label>
+                            <input id="batchUsers" name="batchUsers" class="form-control" type="file" tabindex="14">
+                            <span class="form-text text-muted">Allowed file types:  xlsx, xls.</span>
+                        </div>
+                        <div class="card-footer">
+                            <button type="submit" class="btn btn-primary mr-2">Upload Item(s)</button>
+                            <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
+<!-- Modal -->
+<div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" 
+     aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="staticBackdropLabel">Book For Repair</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+            
+                <div class="form-group col-12">
+                    <label class="control-label"></label>
+                    <textarea style="height: 100%; width: 100%; resize: none" rows="5"
+                    class="form-control" id="validationTextarea" placeholder="Add note" required></textarea>
+                    <span class="text-danger"></span>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-outline-primary shadow-sm m-0">Submit</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts {
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $("#tbl").DataTable();
+        });
+    </script>
+}

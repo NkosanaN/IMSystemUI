@@ -2,17 +2,18 @@
 
 @{
     ViewData["Title"] = "Index";
+    Layout = "_LayoutDashboard";
 }
-
+<h1>@ViewData["Title"]</h1>
 <p>
     <a asp-action="Create" class="btn btn-light shadow-sm">Add New Shelve</a>
 </p>
 <table class="table w-100 table-striped" id="tbl">
     <thead>
         <tr>
-            <th>
+          @*  <th>
                 @Html.DisplayNameFor(model => model.ShelfId)
-            </th>
+            </th>*@
             <th>
                 @Html.DisplayNameFor(model => model.ShelfTag)
             </th>
@@ -23,9 +24,9 @@
         @foreach (var item in Model)
         {
             <tr>
-                <td>
+             @*   <td>
                     @Html.DisplayFor(modelItem => item.ShelfId)
-                </td>
+                </td>*@
                 <td>
                     @Html.DisplayFor(modelItem => item.ShelfTag)
                 </td>
@@ -36,11 +37,14 @@
                                 Action
                             </button>
                             <ul class="dropdown-menu" aria-labelledby="btnGroupDrop1">
-                                <li><a class="dropdown-item" href="/ShelveType/Edit?id=@item.ShelfId">Edit</a></li>
+               @*                 <li><a class="dropdown-item" href="/ShelveType/Edit?id=@item.ShelfId">Edit</a></li>*@
                                 <li><a class="dropdown-item" href="/ShelveType/Details?id=@item.ShelfId">Details</a></li>
-                                <li><a class="dropdown-item" href="/ShelveType/Delete?id=@item.ShelfId">Delete</a></li>
+                      @*          <li><a class="dropdown-item" href="/ShelveType/Delete?id=@item.ShelfId">Delete</a></li>*@
                                 <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item" href="#">View Report</a></li>
+                                <li><a class="dropdown-item" asp-action="ItemLinked"
+                                       asp-controller="Item" asp-route-shelfId="@item.ShelfId"
+                                    asp-route-shalftag="@item.ShelfTag">Items Linked To Shelve </a>
+                                </li>
                             </ul>
                         </div>
                     </div>

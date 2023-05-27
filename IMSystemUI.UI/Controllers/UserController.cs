@@ -6,39 +6,43 @@ namespace IMSystemUI.UI.Controllers
 {
     public class UserController : Controller
     {
-        private readonly IHttpClientExtensions _client;
-        public UserController(IHttpClientExtensions client)
+        private readonly IUserService _userSrv;
+        public UserController(IUserService userSrv)
         {
-            _client = client;
+            _userSrv = userSrv;
         }
-
-        // GET: DepartmentController
         public async Task<ActionResult> Index()
         {
-            var data = await _client.GetAllAsync<User>();
+            var data = await _userSrv.GetAllUsersAsync();
             return View(data);
         }
+        // GET: UserController
+        //public async Task<ActionResult> Login(Login user)
+        //{
+        //    await _client.CreateAsync(user);
+        //    return View();
+        //}
 
-        // GET: DepartmentController/Details/5
+        // GET: UserController/Details/5
         public ActionResult Details(int id)
         {
             return View();
         }
 
-        // GET: DepartmentController/Create
+        // GET: UserController/Create
         public ActionResult Create()
         {
             return View();
         }
 
-        // POST: DepartmentController/Create
+        // POST: UserController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Create(Department model)
         {
             try
             {
-                await _client.CreateAsync(model);
+               // await _client.CreateAsync(model);
                 return RedirectToAction(nameof(Index));
             }
             catch
@@ -47,13 +51,13 @@ namespace IMSystemUI.UI.Controllers
             }
         }
 
-        // GET: DepartmentController/Edit/5
+        // GET: UserController/Edit/5
         public ActionResult Edit(int id)
         {
             return View();
         }
 
-        // POST: DepartmentController/Edit/5
+        // POST: UserController/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Edit(int id, IFormCollection collection)
@@ -68,13 +72,13 @@ namespace IMSystemUI.UI.Controllers
             }
         }
 
-        // GET: DepartmentController/Delete/5
+        // GET: UserController/Delete/5
         public ActionResult Delete(int id)
         {
             return View();
         }
 
-        // POST: DepartmentController/Delete/5
+        // POST: UserController/Delete/5
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Delete(int id, IFormCollection collection)

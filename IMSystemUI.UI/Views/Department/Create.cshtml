@@ -2,8 +2,10 @@
 
 @{
     ViewData["Title"] = "Create Department";
+    Layout = "_LayoutDashboard";
 }
-
+<h1>@ViewData["Title"]</h1>
+<hr />
 <div class="row">
     <div class="container bg-opacity-100 shadow-sm">
         <form asp-action="Create">
@@ -19,8 +21,8 @@
                 <span asp-validation-for="Description" class="text-danger"></span>
             </div>
             <div class="form-group mb-3">
-                <input type="submit" value="Create" class="btn btn-light shadow-sm m-2" />
-                <a asp-action="Index">Back to List</a>
+                <input type="submit" value="Create" class="btn btn-light shadow-sm" />&nbsp;
+                <a asp-action="Index" class="btn btn-outline-secondary shadow-sm">Back to List</a>
             </div>
         </form>
     </div>

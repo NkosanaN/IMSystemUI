@@ -7,84 +7,25 @@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/IMSystemUI.UI.styles.css" asp-append-version="true" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" integrity="sha512-KfkfwYDsLkIlwQp6LFnl8zNdLGxu9YAA1QvwINks4PhcElQSvqcyVLLD9aMhXd13uQjoXtEKNosOWaZqXgel0g==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 
-    <style>
-        body {
-            background-image: linear-gradient(to bottom right, #007bff, #0056b3);
-        }
-        .login-form {
-            border-radius: 5px;
-            box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.3);
-            padding: 20px;
-            backdrop-filter: blur(10px);
-            background-color: rgba(255,255,255,0.8);
-        }
-        .login-form label {
-            font-weight: bold;
-            color: #000;
-        }
-        .login-form input[type="text"], 
-        .login-form input[type="password"] {
-            border-radius: 3px;
-            border: none;
-            padding: 10px;
-            box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.1);
-            margin-bottom: 20px;
-            background-color: rgba(255,255,255,0.5);
-            backdrop-filter: blur(5px);
-        }
-        .login-form button[type="submit"] {
-            background-color: #fff;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 3px;
-            color: #007bff;
-            transition: all 0.3s ease;
-        }
-        .login-form button[type="submit"]:hover {
-            background-color: #007bff;
-            color: #fff;
-            cursor: pointer;
-        }
-        .forgot-password-link {
-            color: #000;
-            text-decoration: none;
-            font-size: 14px;
-        }
-        .forgot-password-link:hover {
-            text-decoration: underline;
-        }
-    </style>
 </head>
 
 <body>
-    
-<div class="container py-5">
-    <div class="row justify-content-center">
-        <div class="col-md-6">
-            <form class="login-form">
-                <h2 class="mb-4 text-center">Item Transfer Login</h2>
-                <div class="mb-3">
-                    <label for="username" class="form-label">Username</label>
-                    <input type="text" class="form-control" id="username" name="username" required>
-                </div>
-                <div class="mb-3">
-                    <label for="password" class="form-label">Password</label>
-                    <input type="password" class="form-control" id="password" name="password" required>
-                </div>
-                <button type="submit" class="btn btn-primary btn-block">Login</button>
-                <a href="#" class="forgot-password-link text-center mt-3 d-block">Forgot password?</a>
-            </form>
-        </div>
-    </div>
-</div>
+
+<partial name="_LoginPartial"/>
+  @*  <partial name="_RegisterPartial" />*@
+
 @RenderBody()
 
 
 
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
-    @await RenderSectionAsync("Scripts", required: false)
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+<script src="~/js/site.js" asp-append-version="true"></script>
+<script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+@await Html.PartialAsync("_notificationPartial")
+
+@await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

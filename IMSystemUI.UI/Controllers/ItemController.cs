@@ -2,32 +2,102 @@
 using Microsoft.AspNetCore.Mvc;
 using Item = IMSystemUI.Domain.Item;
 using ClosedXML.Excel;
+using IMSystemUI.UI.Helpers;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using IMSystemUI.Domain;
 
 namespace IMSystemUI.UI.Controllers
 {
-    public class ItemController : Controller
+    public class ItemController : BaseController
     {
-        private readonly IHttpClientExtensions _client;
+        public const string SessionKeyName = "_id";
+        private IEnumerable<SelectListItem>? ItemsList { get; set; }
+        private IEnumerable<SelectListItem>? UserList { get; set; }
+        private IEnumerable<SelectListItem>? ShelveList { get; set; }
 
-        public ItemController(IHttpClientExtensions client)
+        //public const string SessionKeyName = "_shelveType";
+
+        private readonly IItemService _itemSrv;
+        private readonly ISupplierService _supplierSrv;
+        private readonly IUserService _userSrv;
+        private readonly IShelveTypeService _shelvetypeSrv;
+
+        public ItemController(
+            IItemService itemSrv, 
+            ISupplierService supplierSrv, 
+            IUserService userSrv,
+            IShelveTypeService shelvetypeSrv)
         {
-            _client = client;
+            _itemSrv = itemSrv;
+            _supplierSrv = supplierSrv;
+            _userSrv = userSrv;
+            _shelvetypeSrv = shelvetypeSrv;
         }
 
-        // GET: DepartmentController
+        // GET: ItemController
         public async Task<ActionResult> Index()
         {
-            var data = await _client.GetAllAsync<Item>();
+            var data = await _itemSrv.GetAllItemsAsync();
             return View(data);
         }
 
-        // GET: DepartmentController/Details/5
+        // GET: ItemController
+        public async Task<ActionResult> ItemLinked(Guid shelfId , string shalftag)
+        {
+            var data = await _itemSrv.GetAllItemsAsync();
+
+            var linkedItem = data.Where(x => x.ShelveBy!.ShelfId == shelfId).ToList();
+
+            ViewBag.shalftag = shalftag;
+
+            return View(linkedItem);
+        }
+
+        // GET: ItemController/Details/5
         public async Task<ActionResult> Details(Guid id)
         {
-            var data = await _client.GetByIdAsync<Item>(id);
+            var data = await _itemSrv.GetAllItemAsync(id);
+
             return View(data);
         }
-        
+
+        public async Task<ActionResult> BookingForRepair(Guid id)
+        {
+            var loadItems = await _itemSrv.GetAllItemsAsync();
+
+           // var loadSupplier = await _supplierSrv.GetAllSupplierAsync();
+
+            var loadUsers = await _userSrv.GetAllUsersAsync();
+
+            var dataUser = loadUsers
+                .AsQueryable()
+                .Select(x => new { Value = x.Id, Text = x.DisplayName })
+                .ToList();
+
+            var dataItem = loadItems
+                .AsQueryable()
+                .Where(c => c.ItemId == id)
+                .Select(x => new { Value = x.ItemId, Text = x.Name })
+                .ToList();
+
+            UserList = dataUser.Select(i => new SelectListItem
+            {
+                Text = i.Text,
+                Value = i.Value!.ToString()
+            });
+
+            ItemsList = dataItem.Select(i => new SelectListItem
+            {
+                Text = i.Text,
+                Value = i.Value!.ToString()
+            });
+
+            ViewBag.issuerList = UserList;
+            ViewBag.itemList = ItemsList;
+
+            return View();
+        }
+
         public async Task<ActionResult> DownloadExcelTemplate()
         {
             // Create a new workbook
@@ -40,11 +110,11 @@ namespace IMSystemUI.UI.Controllers
             worksheet.Cell(1, 1).Value = "Default Item Template Please don't Remove any Title Cell";
             worksheet.Range(1, 1, 1, 3).Merge().Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center; // Merge the first row across all columns and center the text
             worksheet.Range(1, 1, 1, 3).Style.Font.FontColor = XLColor.Red; // Set the font color of the merged cell to red
-            worksheet.Cell(2, 1).Value = "Serialno";
+            worksheet.Cell(2, 1).Value = "Serial no";
             worksheet.Cell(2, 2).Value = "Name";
             worksheet.Cell(2, 3).Value = "Description";
             worksheet.Cell(2, 4).Value = "ItemTag";
-            worksheet.Cell(2, 2).Value = "DueforRepair";
+            worksheet.Cell(2, 2).Value = "Due for Repair";
 
             // Auto-fit the columns
             worksheet.Columns().AdjustToContents();
@@ -66,41 +136,83 @@ namespace IMSystemUI.UI.Controllers
             return File(data, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "Template.xlsx");
         }
 
-        // GET: DepartmentController/Create
-        public ActionResult Create()
+        // GET: AccountController/Create
+        public async Task<ActionResult> Create()
         {
+            var loadShelves = await _shelvetypeSrv.GetAllShelveTypesAsync();
+
+            var dataShelves = loadShelves
+                .AsQueryable()
+                .Select(x => new { Value = x.ShelfId, Text = x.ShelfTag })
+                .ToList();
+
+            ShelveList = dataShelves.Select(i => new SelectListItem
+            {
+                Text = i.Text,
+                Value = i.Value!.ToString()
+            });
+
+
             var model = new Item
             {
                 DatePurchased = Convert.ToDateTime(DateTime.Now.ToString("MM/dd/yyyy"))
             };
 
+            ViewBag.shelveList = ShelveList;
+            var id = HttpContext.Session.GetString(SessionKeyName);
+
             return View(model);
         }
 
-        // POST: DepartmentController/Create
+        // POST: ItemController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Create(Item model)
         {
             try
             {
-                await _client.CreateAsync(model);
+                // model.CreatedBy!.Id = Guid.Parse(id!);
+                model.ItemId = Guid.NewGuid();
+                model.ItemTag = "Empty";
+                await _itemSrv.CreateItemAsync(model);
+
+                Notify("Successful created item.", type: NotificationType.success);
+
                 return RedirectToAction(nameof(Index));
             }
-            catch
+            catch(Exception ex)
             {
-                return View();
+                Console.WriteLine(ex.ToString());
+                const string msg = ResponseMessageCodes.ErrorMsg;
+                var errorDescription = ResponseMessageCodes.ErrorDictionary[msg];
+
+                Notify(errorDescription, type: NotificationType.error);
             }
+            var loadShelves = await _shelvetypeSrv.GetAllShelveTypesAsync();
+
+            var dataShelves = loadShelves
+                .AsQueryable()
+                .Select(x => new { Value = x.ShelfId, Text = x.ShelfTag })
+                .ToList();
+
+            ShelveList = dataShelves.Select(i => new SelectListItem
+            {
+                Text = i.Text,
+                Value = i.Value!.ToString()
+            });
+
+
+            return View();
         }
 
-        // GET: DepartmentController/Edit/5
+        // GET: ItemController/Edit/5
         public async Task<ActionResult> Edit(Guid id)
         {
-            var data = await _client.GetByIdAsync<Item>(id);
+            var data = await _itemSrv.GetAllItemAsync(id);
             return View(data);
         }
 
-        // POST: DepartmentController/Edit/5
+        // POST: ItemController/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Edit(int id, IFormCollection collection)
@@ -115,21 +227,21 @@ namespace IMSystemUI.UI.Controllers
             }
         }
 
-        // GET: DepartmentController/Delete/5
+        // GET: ItemController/Delete/5
         public async Task<ActionResult> Delete(Guid id)
         {
-            var data = await _client.GetByIdAsync<Item>(id);
+            var data = await _itemSrv.GetAllItemAsync(id);
             return View(data);
         }
 
-        // POST: DepartmentController/Delete/5
+        // POST: ItemController/Delete/5
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Delete(Guid id, IFormCollection collection)
         {
             try
             {
-                await _client.DeleteAsync(id);
+                await _itemSrv.RemoveItemAsync(id);
                 return RedirectToAction(nameof(Index));
             }
             catch

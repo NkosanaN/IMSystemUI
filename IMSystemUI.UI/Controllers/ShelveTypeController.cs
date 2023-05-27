@@ -1,29 +1,32 @@
-﻿using IMSystemUI.Domain;
+﻿using DocumentFormat.OpenXml.Math;
+using IMSystemUI.Domain;
 using IMSystemUI.Service.Interfaces;
+using IMSystemUI.UI.Helpers;
 using Microsoft.AspNetCore.Mvc;
-using System.Reflection;
 
 namespace IMSystemUI.UI.Controllers
 {
-    public class ShelveTypeController : Controller
+    public class ShelveTypeController : BaseController
     {
-        private readonly IHttpClientExtensions _client;
-        public ShelveTypeController(IHttpClientExtensions client)
+        private readonly IShelveTypeService _shelvetypeSrv;
+        public ShelveTypeController(IShelveTypeService shelvetypeSrv)
         {
-            _client = client;
+            _shelvetypeSrv = shelvetypeSrv;
         }
 
         // GET: DepartmentController
         public async Task<ActionResult> Index()
         {
-            var data = await _client.GetAllAsync<ShelveType>();
+            var data = await _shelvetypeSrv.GetAllShelveTypesAsync();
+
             return View(data);
         }
 
         // GET: DepartmentController/Details/5
         public async Task<ActionResult> Details(Guid id)
         {
-            var data = await _client.GetByIdAsync<ShelveType>(id);
+            var data = await _shelvetypeSrv.GetAllShelveTypeAsync(id);
+
             return View(data);
         }
 
@@ -40,11 +43,19 @@ namespace IMSystemUI.UI.Controllers
         {
             try
             {
-                await _client.CreateAsync(model);
+                await _shelvetypeSrv.CreateShelveTypeAsync(model);
+
+                Notify("shelve info .", "Successful created new shelve type .", type: NotificationType.success);
+
                 return RedirectToAction(nameof(Index));
             }
-            catch
+            catch(Exception ex)
             {
+                const string msg = ResponseMessageCodes.ErrorMsg;
+                var errorDescription = ResponseMessageCodes.ErrorDictionary[msg];
+
+                Notify(errorDescription, type: NotificationType.error);
+
                 return View();
             }
         }
@@ -52,18 +63,21 @@ namespace IMSystemUI.UI.Controllers
         // GET: DepartmentController/Edit/5
         public async Task<ActionResult> Edit(Guid id)
         {
-            var data = await _client.GetByIdAsync<ShelveType>(id);
+            var data = await _shelvetypeSrv.GetAllShelveTypeAsync(id);
             return View(data);
         }
 
         // POST: DepartmentController/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Edit(Guid id, ShelveType model)
+        public async Task<ActionResult> Edit(Guid ShelfId, ShelveType model)
         {
             try
             {
-                await _client.DeleteAsync(id);
+                await _shelvetypeSrv.UpdateShelveTypeAsync(ShelfId, model);
+
+                Notify("shelve info .", "Successful updated shelve type.", type: NotificationType.info);
+
                 return RedirectToAction(nameof(Index));
             }
             catch
@@ -75,7 +89,7 @@ namespace IMSystemUI.UI.Controllers
         // GET: DepartmentController/Delete/5
         public async Task<ActionResult> Delete(Guid id)
         {
-            var data = await _client.GetByIdAsync<ShelveType>(id);
+            var data = await _shelvetypeSrv.GetAllShelveTypeAsync(id);
             return View(data);
         }
 
@@ -86,7 +100,10 @@ namespace IMSystemUI.UI.Controllers
         {
             try
             {
-                await _client.DeleteAsync(id);
+                await _shelvetypeSrv.RemoveShelveTypeAsync(id);
+
+                Notify("shelve info .", "Successful removed shelve type.", type: NotificationType.info);
+
                 return RedirectToAction(nameof(Index));
             }
             catch

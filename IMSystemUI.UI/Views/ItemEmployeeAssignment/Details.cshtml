@@ -5,27 +5,28 @@
     string returnCondiction = string.Empty;
     string reasonForNotReturn = string.Empty;
     string isReturn = string.Empty;
+    Layout = "_LayoutDashboard";
 }
-
-@*<h4>Details</h4>*@
+<h1>@ViewData["Title"]</h1>
+<hr />
 
 <div>
     <table class="table rounded table-bordered shadow-lg">
         <thead class="alert-heading" style="background-color: #676e79;color: #fff">
             <tr>
-                <th>@Html.DisplayNameFor(model => model.IssuerBy!.DisplayName)</th>
-                <th>@Html.DisplayNameFor(model => model.ReceiverBy!.DisplayName)</th>
+                <th>IssuerBy</th>
+                <th>ReceiverBy</th>
             </tr>
         </thead>
         <tbody>
             <tr>
-                <td>@Html.DisplayFor(model => model.IssuerBy!.DisplayName) </td>
-                <td> @Html.DisplayFor(model => model.ReceiverBy!.DisplayName)</td>
+                <td>@Model.IssuerBy!.Firstname - (@Model.IssuerBy.Lastname)</td>
+                <td>@Model.ReceiverBy!.Firstname - (@Model.ReceiverBy.Lastname) </td>
             </tr>
         </tbody>
     </table>
 
-    <h4 class="text-center">Item </h4>
+    <h4 class="text-center">Item Transfer</h4>
     <table class="table table-bordered shadow-lg">
         <thead class="alert-heading" style="background-color: #676e79;color: #fff">
         <tr>

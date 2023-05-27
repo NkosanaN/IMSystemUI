@@ -13,12 +13,15 @@ namespace IMSystemUI.Domain
         public DateTime TimeStamp { get; set; } = DateTime.Now;
 
         [DisplayName("Item Name")]
+        [Required]
         public string Name { get; set; } = string.Empty;
+        [Required]
         public string Description { get; set; } = string.Empty;
 
         [DisplayName("Item Tag")]
         public string? ItemTag { get; set; }
         public float Cost { get; set; } = 0.00f;//should be uniqueCost
+        public ShelveType? ShelveBy { get; set; }
 
         [DisplayName("Quantity")]
         public float Qty { get; set; } = 0.00f;
@@ -28,6 +31,9 @@ namespace IMSystemUI.Domain
 
         [DisplayName("is Due for Repair")]
         public bool DueforRepair { get; set; }
+
+        public string CreatedById { get; set; }
+        public User? CreatedBy { get; set; }
 
     }
 }

@@ -1,19 +1,26 @@
-﻿using IMSystemUI.Service.Interfaces;
+﻿using DocumentFormat.OpenXml.Office2010.Excel;
+using IMSystemUI.Service.Interfaces;
 using IMSystemUI.UI.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
+using DocumentFormat.OpenXml.Wordprocessing;
 using IMSystemUI.Domain;
+using IMSystemUI.UI.Helpers;
 
 namespace IMSystemUI.UI.Controllers
 {
-    public class HomeController : Controller
+    public class HomeController : BaseController
     {
-        private readonly ILogger<HomeController> _logger;
-        private readonly IHttpClientExtensions _client;
-        public HomeController(ILogger<HomeController> logger , IHttpClientExtensions client)
+        public List<ItemCount> ChartData { get; set; } = default!;
+        public const string SessionKeyName = "_id";
+        private readonly IItemService _itemSrv;
+
+
+        //  private readonly IItemService _itemSrv;
+
+        public HomeController(IItemService itemSrv)
         {
-            _logger = logger;
-            _client = client;
+            _itemSrv = itemSrv;
         }
 
         public IActionResult Index()
@@ -23,32 +30,39 @@ namespace IMSystemUI.UI.Controllers
 
         public async Task<IActionResult> DashboardData()
         {
-            return View();
+
+            Notify("Successful created order", "Successful created order", type: NotificationType.success);
+
+
+            var itemCount = new List<ItemCount>();
+
+            var data = await _itemSrv.GetAllItemsAsync();
+
+            var getSelect = data!.GroupBy(_ => _.ShelveBy!.ShelfTag)
+                 .Select(g => new
+                 {
+                     Name = g.Key,
+                     Count = g.Count()
+                 })
+                 .OrderByDescending(cp => cp.Count)
+                 .ToList();
+
+            foreach (var item in getSelect)
+            {
+                itemCount.Add(new ItemCount
+                {
+                    Name = item.Name,
+                    Count = item.Count
+                });
+            }
+
+            ChartData = itemCount;
+
+            //var id =   HttpContext.Session.GetString(SessionKeyName);
+
+
+            return View(ChartData);
         }
-
-        //[HttpGet]
-        //public async Task<IActionResult> DashboardData()
-        //{
-        //    var today = DateTime.Today;
-
-        //    var lastWeek = today.AddDays(-6);
-
-        //    var list = await _client.GetAllAsync<ItemEmployeeAssignment>();
-
-        //    var data = new List<int>();
-
-        //    for (var date = lastWeek; date <= today; date = date.AddDays(1))
-        //    {
-        //        var itemsTransferred = list
-        //            .Where(item => item.DateTaken == date)
-        //            .Count();
-
-        //        data.Add(itemsTransferred);
-        //    }
-
-        //    return View(data);
-        //}
-
 
         public IActionResult Privacy()
         {

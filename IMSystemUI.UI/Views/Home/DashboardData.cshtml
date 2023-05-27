@@ -1,171 +1,143 @@
-﻿@model int[]
+﻿@model IEnumerable<IMSystemUI.Domain.ItemCount>
 @{
     ViewData["Title"] = "Dashboard";
+    Layout = "_LayoutDashboard";
 }
-<div class="row">
-    <div class="container">
-        <div class="row">
-            <div class="col-sm-12">
-                @*      <h1 style="text-align: center">Dashbord</h1>*@
+@*<h1>@ViewData["Title"]</h1>*@
+
+@*<div class="text-center">
+    <h4 class="display-4">@ViewData["Title"]</h4>
+    <div class="card">
+        <div class="card-header">Items Per Shelve</div>
+        <div class="chart-container">
+            <canvas id="myChart" width="100" height="300"></canvas>
+        </div>
+        <div class="card-header">Items Per Shelve</div>
+        <div class="chart-container">
+            <canvas id="myChart2" width="100" height="300"></canvas>
+        </div>
+    </div>
+</div>*@
+
+
+<div class="container-fluid px-4">
+    <h6 class="display-6">@ViewData["Title"]</h6>
+    <div class="row g-3 my-2">
+        <div class="col-md-3">
+            <div class="p-3 bg-white shadow-lg d-flex justify-content-around align-items-center rounded">
+                <div>
+                    <h3 class="fs-2">100</h3>
+                    <p class="fs-5">Total Items</p>
+                </div>
+                <div>
+                    <i class="fa-solid fa-hammer fs-1 primary-text border rounded-circle bg-danger bg-opacity-50 p-3"></i>
+
+                </div>
             </div>
         </div>
-        <div class="row">
-            <div class="col-md-6 m-0">
-                <div class="card " style="height: 400px">
-                    <div class="card-body">
+        <div class="col-md-3">
+            <div class="p-3 bg-white shadow-lg d-flex justify-content-around align-items-center rounded">
+                <div>
+                    <h3 class="fs-2">2</h3>
+                    <p class="fs-5">Total Transfer</p>
+                </div>
+                <div>
+                    <i class="fa-solid fa-arrows-spin fs-1 primary-text border rounded-circle bg-info bg-opacity-50 p-3"></i>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="p-3 bg-white shadow-lg d-flex justify-content-around align-items-center rounded">
+                <div>
+                    <h3 class="fs-2">10</h3>
+                    <p class="fs-5">Top 10 Used</p>
+                </div>
+                <div>
+                    <i class="fa-solid fa-hands-bubbles fs-1 primary-text border rounded-circle bg-success bg-opacity-50 p-3"></i>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="p-3 bg-white shadow-lg d-flex justify-content-around align-items-center rounded">
+                <div>
+                    <h3 class="fs-2">3</h3>
+                    <p class="fs-5">Repairs</p>
+                </div>
+                <div>
+                    <i class="fa-solid fa-truck-arrow-right  fs-1 primary-text border rounded-circle bg-warning bg-opacity-50 p-3"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="row my-5">
+            <div class="col-6 ">
+                <div class="card">
+                    <div class="fs-4 mb-3  card-header text-center">Items Per Shelve</div>
+                    <div class="col card-body">
                         <canvas id="myChart"></canvas>
                     </div>
                 </div>
             </div>
-
-            <div class="col-md-6">
-                <div class="card" style="height: 400px">
-                    <div class="card-body">
-                        <canvas id="myChart1"></canvas>
+            <div class="col-6 ">
+                <div class="card">
+                    <div class="fs-4 mb-3  card-header text-center">Items Per Shelve</div>
+                    <div class="col card-body">
+                        <canvas id="myChart"></canvas>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="row mt-3">
-            <div class="col-md-6">
-                <div class="card" style="height: 400px">
-                    <div class="card-body container-fluid">
-                        <div class="card text-white bg-secondary ">
-                            <div class="card-header">Pending</div>
-                            <div class="card-body">
-                                <h5 class="card-title">0</h5>
-                            </div>
-                        </div>
 
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-md-6">
-                <div class="card" style="height: 400px">
-                    <div class="card-body container-fluid">
-                        <div class="card">
-                            <div class="card-body">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
     </div>
-
 </div>
-@section Scripts {
 
+
+@section Scripts {
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-    <script>
-        const plugin = {
-            id: 'customCanvasBackgroundColor',
-            beforeDraw: (chart, args, options) => {
-                const { ctx } = chart;
-                ctx.save();
-                ctx.globalCompositeOperation = 'destination-over';
-                ctx.fillStyle = options.color || '#99ffff';
-                ctx.fillRect(0, 0, chart.width, chart.height);
-                ctx.restore();
-            }
-        };
+    <script type="text/javascript">
 
-        const ctx = document.getElementById('myChart');
+        var Count = [];
+        var Shelves = [];
+
+        @if (Model.Any())
+        {
+            foreach (var item in Model)
+            {
+                @:Count.push(@item.Count);
+                @:Shelves.push('@item.Name');
+            }
+        }
+
+                                        const ctx = document.getElementById('myChart').getContext('2d');
 
         new Chart(ctx, {
             type: 'bar',
             data: {
-                labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
+                labels: Shelves,
                 datasets: [{
-                    label: '# of Departments',
-                    data: [12, 19, 3, 5, 2, 3],
-                    borderWidth: 1                   
+                    label: 'Shelves',
+                    data: Count,
+                    //borderWidth: 1
                 }]
-            }            ,
-            options: {
-                plugins: {
-                    customCanvasBackgroundColor: {
-                        color: 'Grey',
-                    }
-                }
             },
-            plugins: [plugin],
-        });
-
-        const ctx1 = document.getElementById('myChart1');
-
-        new Chart(ctx1, {
-            type: 'doughnut',
-            data: {
-              
-                datasets: [{
-                    label: 'My First Dataset',
-                    data: [12, 19, 3, 5, 2, 3],
-                    borderWidth: 1,
-                    backgroundColor: [
-                        'rgb(255, 99, 132)',
-                        'rgb(54, 162, 235)',
-                        'rgb(255, 205, 86)'
-                    ],
-                    hoverOffset: 4
-                }]
-            }
-            //,
             //options: {
-            //    plugins: {
-            //        customCanvasBackgroundColor: {
-            //            color: 'lightGreen',
+            //    scales: {
+            //        y: {
+            //            beginAtZero: true
             //        }
             //    }
-            //},
-            //plugins: [plugin],
-        });
+            //}
+        })
+
+
+
+
     </script>
 
-    @*
-    <script>
-        $(function ()
-        {
-            $.ajax({
-                url: '@Url.Action("DashboardData", "Home")',
-                method: 'GET',
-                success: function (data) {
-                    console.log(data)
-                //    var chartData = {
-                //        labels: ['@DateTime.Today.AddDays(-6).ToShortDateString()', '@DateTime.Today.AddDays(-5).ToShortDateString()', '@DateTime.Today.AddDays(-4).ToShortDateString()', '@DateTime.Today.AddDays(-3).ToShortDateString()', '@DateTime.Today.AddDays(-2).ToShortDateString()', '@DateTime.Today.AddDays(-1).ToShortDateString()', '@DateTime.Today.ToShortDateString()'],
-                //        datasets: [
-                //            {
-                //                label: 'Items Transferred',
-                //                data: data,
-                //                backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                //                borderColor: 'rgba(54, 162, 235, 1)',
-                //                borderWidth: 1,
-                //            },
-                //        ],
-                //    };
 
-                //    var chartOptions = {
-                //        scales: {
-                //            y: {
-                //                beginAtZero: true,
-                //            },
-                //        },
-                //    };
-
-                //    var chart = new Chart($('#chart'), {
-                //        type: 'bar',
-                //        data: chartData,
-                //        options: chartOptions,
-                //    });
-                //},
-            }
-        });
-
-</script>*@
 
 }
 

@@ -2,15 +2,19 @@
 
 @{
     ViewData["Title"] = "Edit Supplier";
+    Layout = "_LayoutDashboard";
 }
-
+<h1>@ViewData["Title"]</h1>
+<hr/>
 <div class="row">
     <div class="container bg-opacity-100 shadow-sm">
         <form asp-action="Edit">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group disabled mb-3">
+         @*       @Html.HiddenFor(model => model.SupplierId, new { @disabled = "disabled" })*@
+
                 <label asp-for="SupplierId" class="control-label"></label>
-                <input asp-for="SupplierId" class="form-control" disabled />
+                <input asp-for="SupplierId" class="form-control" disabled="disabled" />
                 <span asp-validation-for="SupplierId" class="text-danger"></span>
             </div>
             <div class="form-group mb-3">
@@ -28,7 +32,7 @@
                 <span asp-validation-for="BookingDate" class="text-danger"></span>
             </div>
             <div class="form-group mb-3">
-                <input type="submit" value="Save" class="btn btn-light shadow-sm m-0" />
+                <input type="submit" value="Save" class="btn btn-light shadow-sm m-0" asp-route-SupplierId="@Model.SupplierId" />
                 <a asp-action="Index" class="btn btn-outline-secondary shadow-sm">Back to List</a>
             </div>
         </form>

@@ -16,7 +16,7 @@ namespace IMSystemUI.Domain
         public Guid ItemId { get; set; }
         public Item? Item { get; set; }
 
-        [DisplayName("Taken Date"), DisplayFormat(DataFormatString = "{0:MM/dd/yyyy}")]
+        [DisplayName("Checkout Date"), DisplayFormat(DataFormatString = "{0:MM/dd/yyyy}")]
         public DateTime DateTaken { get; set; } = DateTime.Now;
         public string IssueSignature { get; set; } = string.Empty;
 

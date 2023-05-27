@@ -1,21 +1,16 @@
-using DocumentFormat.OpenXml.Drawing;
-using IMSystemUI.Service.Helpers;
-using IMSystemUI.Service.Interfaces;
-using IMSystemUI.Service.Repository;
+using IMSystemUI.UI.Extension;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-//builder.Services.ConfigureService();    
+builder.Services.ConfigureService();
 builder.Services.AddControllersWithViews();
 
-builder.Services.AddHttpClient<IHttpClientExtensions, HttpClientExtensions>();
+//builder.Services.AddHttpClient<IHttpClientExtensions, HttpClientExtensions>();
+
 builder.Services.AddHttpContextAccessor();
 
-
 var app = builder.Build();
-
-
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
@@ -31,6 +26,10 @@ app.UseStaticFiles();
 app.UseRouting();
 
 app.UseAuthorization();
+
+app.UseSession();
+
+//app.UseMiddleware<TokenBearerMiddleware>();
 
 app.MapControllerRoute(
     name: "default",
