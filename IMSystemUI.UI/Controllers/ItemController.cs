@@ -5,12 +5,13 @@ using ClosedXML.Excel;
 using IMSystemUI.UI.Helpers;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using IMSystemUI.Domain;
+using DocumentFormat.OpenXml.Spreadsheet;
+using DocumentFormat.OpenXml.EMMA;
 
 namespace IMSystemUI.UI.Controllers
 {
     public class ItemController : BaseController
     {
-        public const string SessionKeyName = "_id";
         private IEnumerable<SelectListItem>? ItemsList { get; set; }
         private IEnumerable<SelectListItem>? UserList { get; set; }
         private IEnumerable<SelectListItem>? ShelveList { get; set; }
@@ -23,8 +24,8 @@ namespace IMSystemUI.UI.Controllers
         private readonly IShelveTypeService _shelvetypeSrv;
 
         public ItemController(
-            IItemService itemSrv, 
-            ISupplierService supplierSrv, 
+            IItemService itemSrv,
+            ISupplierService supplierSrv,
             IUserService userSrv,
             IShelveTypeService shelvetypeSrv)
         {
@@ -37,14 +38,14 @@ namespace IMSystemUI.UI.Controllers
         // GET: ItemController
         public async Task<ActionResult> Index()
         {
-            var data = await _itemSrv.GetAllItemsAsync();
+            var data = await _itemSrv.GetAllItemsAsync(Token);
             return View(data);
         }
 
         // GET: ItemController
-        public async Task<ActionResult> ItemLinked(Guid shelfId , string shalftag)
+        public async Task<ActionResult> ItemLinked(Guid shelfId, string shalftag)
         {
-            var data = await _itemSrv.GetAllItemsAsync();
+            var data = await _itemSrv.GetAllItemsAsync(Token);
 
             var linkedItem = data.Where(x => x.ShelveBy!.ShelfId == shelfId).ToList();
 
@@ -56,18 +57,18 @@ namespace IMSystemUI.UI.Controllers
         // GET: ItemController/Details/5
         public async Task<ActionResult> Details(Guid id)
         {
-            var data = await _itemSrv.GetAllItemAsync(id);
+            var data = await _itemSrv.GetAllItemAsync(id, Token);
 
             return View(data);
         }
 
         public async Task<ActionResult> BookingForRepair(Guid id)
         {
-            var loadItems = await _itemSrv.GetAllItemsAsync();
+            var loadItems = await _itemSrv.GetAllItemsAsync(Token);
 
-           // var loadSupplier = await _supplierSrv.GetAllSupplierAsync();
+            // var loadSupplier = await _supplierSrv.GetAllSupplierAsync();
 
-            var loadUsers = await _userSrv.GetAllUsersAsync();
+            var loadUsers = await _userSrv.GetAllUsersAsync(Token);
 
             var dataUser = loadUsers
                 .AsQueryable()
@@ -139,7 +140,7 @@ namespace IMSystemUI.UI.Controllers
         // GET: AccountController/Create
         public async Task<ActionResult> Create()
         {
-            var loadShelves = await _shelvetypeSrv.GetAllShelveTypesAsync();
+            var loadShelves = await _shelvetypeSrv.GetAllShelveTypesAsync(Token);
 
             var dataShelves = loadShelves
                 .AsQueryable()
@@ -159,7 +160,6 @@ namespace IMSystemUI.UI.Controllers
             };
 
             ViewBag.shelveList = ShelveList;
-            var id = HttpContext.Session.GetString(SessionKeyName);
 
             return View(model);
         }
@@ -171,24 +171,60 @@ namespace IMSystemUI.UI.Controllers
         {
             try
             {
-                // model.CreatedBy!.Id = Guid.Parse(id!);
+                Guid.TryParse(CreatedById, out Guid CreatedByid);
+                model.CreatedById = CreatedByid;
                 model.ItemId = Guid.NewGuid();
                 model.ItemTag = "Empty";
-                await _itemSrv.CreateItemAsync(model);
+                model.ShelfId = model.ShelveBy.ShelfId;
+                await _itemSrv.CreateItemAsync(model, Token);
 
-                Notify("Successful created item.", type: NotificationType.success);
+                Notify("Item", "Successful Add item.", type: NotificationType.success);
 
                 return RedirectToAction(nameof(Index));
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 Console.WriteLine(ex.ToString());
                 const string msg = ResponseMessageCodes.ErrorMsg;
                 var errorDescription = ResponseMessageCodes.ErrorDictionary[msg];
 
-                Notify(errorDescription, type: NotificationType.error);
+                Notify("Item", errorDescription, type: NotificationType.error);
             }
-            var loadShelves = await _shelvetypeSrv.GetAllShelveTypesAsync();
+
+            var loadShelves = await _shelvetypeSrv.GetAllShelveTypesAsync(Token);
+
+            var dataShelves = loadShelves
+                .AsQueryable()
+                .Select(x => new { Value = x.ShelfId, Text = x.ShelfTag })
+                .ToList();
+
+            ShelveList = dataShelves.Select(i => new SelectListItem
+            {
+                Text = i.Text,
+                Value = i.Value!.ToString()
+            });
+            ViewBag.shelveList = ShelveList;
+            return View();
+        }
+
+        public async Task<ActionResult> BookRepair(Guid id, string note)
+        {
+            var data = await _itemSrv.GetAllItemAsync(id, Token);
+
+            //data.DueforRepair = true;
+            //data.RepairMessage = note;
+
+            var r = await _itemSrv.BookRepair(data, Token);
+
+            Notify("Item", $"Item [{data.Name}] has been booked for Repair.", type: NotificationType.info);
+
+            return Ok(new { success  = r });
+        }
+
+        // GET: ItemController/Edit/5
+        public async Task<ActionResult> Edit(Guid id)
+        {
+            var loadShelves = await _shelvetypeSrv.GetAllShelveTypesAsync(Token);
 
             var dataShelves = loadShelves
                 .AsQueryable()
@@ -201,47 +237,56 @@ namespace IMSystemUI.UI.Controllers
                 Value = i.Value!.ToString()
             });
 
+            ViewBag.shelveList = ShelveList;
 
-            return View();
-        }
-
-        // GET: ItemController/Edit/5
-        public async Task<ActionResult> Edit(Guid id)
-        {
-            var data = await _itemSrv.GetAllItemAsync(id);
+            var data = await _itemSrv.GetAllItemAsync(id, Token);
             return View(data);
         }
 
         // POST: ItemController/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
+        public async Task<ActionResult> Edit(Guid ItemId, Item item)
         {
             try
             {
+                item.ShelfId = item.ShelveBy.ShelfId;
+
+                await _itemSrv.UpdateItemAsync(ItemId, item, Token);
+
+                Notify("Item", "Successful Updated item.", type: NotificationType.info);
+
                 return RedirectToAction(nameof(Index));
             }
-            catch
+            catch (Exception ex)
             {
-                return View();
+                Console.WriteLine(ex.ToString());
+                const string msg = ResponseMessageCodes.ErrorMsg;
+                var errorDescription = ResponseMessageCodes.ErrorDictionary[msg];
+
+                Notify("Item", errorDescription, type: NotificationType.error);
             }
+
+            return View();
+
         }
 
         // GET: ItemController/Delete/5
         public async Task<ActionResult> Delete(Guid id)
         {
-            var data = await _itemSrv.GetAllItemAsync(id);
+            var data = await _itemSrv.GetAllItemAsync(id, Token);
             return View(data);
         }
 
         // POST: ItemController/Delete/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Delete(Guid id, IFormCollection collection)
+        public async Task<ActionResult> Delete(Guid ItemId, IFormCollection collection)
         {
             try
             {
-                await _itemSrv.RemoveItemAsync(id);
+                await _itemSrv.RemoveItemAsync(ItemId, Token);
+                Notify("Item", "Successful Delete item.", type: NotificationType.info);
                 return RedirectToAction(nameof(Index));
             }
             catch

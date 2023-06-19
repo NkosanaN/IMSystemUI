@@ -27,7 +27,7 @@ namespace IMSystemUI.Domain
             { PermissionDenied, "You are not authorized to perform this action." },
             { InvalidCredentials, "Invalid credentials. Please, enter valid username and password." },
             { IssuerDenied, "Issuer cannot be the same as Receiver." },
-            { ErrorMsg, "Oops Error Occurred during Processing Successful created order." }
+            { ErrorMsg, "Oops Error Occurred during Processing." }
         };
 
         private static readonly Dictionary<string, string> HappyPath = new()

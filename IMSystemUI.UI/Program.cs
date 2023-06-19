@@ -1,3 +1,4 @@
+using IMSystemUI.Service.Helpers;
 using IMSystemUI.UI.Extension;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -19,15 +20,18 @@ if (!app.Environment.IsDevelopment())
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
+HttpHelper.Configure(app.Services.GetRequiredService<IHttpContextAccessor>());
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
+
+app.UseSession();
 
 app.UseRouting();
 
 app.UseAuthorization();
 
-app.UseSession();
+
 
 //app.UseMiddleware<TokenBearerMiddleware>();
 

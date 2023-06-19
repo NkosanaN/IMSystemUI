@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 
 namespace IMSystemUI.UI.Helpers
@@ -33,6 +34,10 @@ namespace IMSystemUI.UI.Helpers
             var value = configuration["NotificationProvider"];
             return value;
         }
+
+        public string Token => HttpContext.Session.GetString("SessionToken");
+        public string CreatedById => HttpContext.Session.GetString("SessionName");
         
+
     }
 }

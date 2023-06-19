@@ -8,7 +8,7 @@ namespace IMSystemUI.Domain
         [DisplayName("Shelf Id")]
         public Guid ShelfId { get; set; }
 
-        //[JsonPropertyName("shelfTag")]
+        [JsonPropertyName("shelfTag")]
         [DisplayName("Shelf Tag")]
         public string ShelfTag { get; set; } = string.Empty;
     }

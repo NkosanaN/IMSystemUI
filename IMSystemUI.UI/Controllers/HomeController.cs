@@ -1,9 +1,7 @@
-﻿using DocumentFormat.OpenXml.Office2010.Excel;
-using IMSystemUI.Service.Interfaces;
+﻿using IMSystemUI.Service.Interfaces;
 using IMSystemUI.UI.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
-using DocumentFormat.OpenXml.Wordprocessing;
 using IMSystemUI.Domain;
 using IMSystemUI.UI.Helpers;
 
@@ -12,15 +10,13 @@ namespace IMSystemUI.UI.Controllers
     public class HomeController : BaseController
     {
         public List<ItemCount> ChartData { get; set; } = default!;
-        public const string SessionKeyName = "_id";
         private readonly IItemService _itemSrv;
+        private readonly IItemEmployeeAssignmentService _itemEmployeeAssignmentSrv;
 
-
-        //  private readonly IItemService _itemSrv;
-
-        public HomeController(IItemService itemSrv)
+        public HomeController(IItemService itemSrv , IItemEmployeeAssignmentService itemEmployeeAssignmentSrv)
         {
             _itemSrv = itemSrv;
+            _itemEmployeeAssignmentSrv = itemEmployeeAssignmentSrv;
         }
 
         public IActionResult Index()
@@ -28,15 +24,11 @@ namespace IMSystemUI.UI.Controllers
             return View();
         }
 
-        public async Task<IActionResult> DashboardData()
+        public async Task<ActionResult> DashboardData()
         {
-
-            Notify("Successful created order", "Successful created order", type: NotificationType.success);
-
-
             var itemCount = new List<ItemCount>();
 
-            var data = await _itemSrv.GetAllItemsAsync();
+            var data = await _itemSrv.GetAllItemsAsync(Token);
 
             var getSelect = data!.GroupBy(_ => _.ShelveBy!.ShelfTag)
                  .Select(g => new
@@ -58,10 +50,30 @@ namespace IMSystemUI.UI.Controllers
 
             ChartData = itemCount;
 
-            //var id =   HttpContext.Session.GetString(SessionKeyName);
+            ViewBag.TotalNoItem = GetStats().Result.Item1;
+            ViewBag.TotalNoTransfer = GetStats().Result.Item2;
+            ViewBag.TotalNoMostUsedItems = GetStats().Result.Item3;
+            ViewBag.TotalNoItemRepair = GetStats().Result.Item4;
 
 
             return View(ChartData);
+        }
+
+        public async Task<(int, int, int, int)> GetStats()
+        {
+            var item = await _itemSrv.GetAllItemsAsync(Token);
+            var itemCount = item.Count();
+            
+            var getItemsNotReturned =  await _itemEmployeeAssignmentSrv.GetAllItemEmployeeAssignmentsAsync(Token);
+            var NoItemNoReturned = getItemsNotReturned
+                .Where(x => x.IsReturned == false).Count();
+
+
+            var TotalNoItem = itemCount;
+            var getItemsRepair = await _itemSrv.GetAllItemsAsync(Token);
+            var TotalItemRepair  =  getItemsRepair.Where(x => x.DueforRepair == true).Count();
+
+            return (TotalNoItem, NoItemNoReturned, 5, TotalItemRepair);
         }
 
         public IActionResult Privacy()

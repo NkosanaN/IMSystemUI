@@ -13,19 +13,16 @@
 
 <body>
 
-<partial name="_LoginPartial"/>
-  @*  <partial name="_RegisterPartial" />*@
+    <partial name="_LoginPartial" />
 
-@RenderBody()
+    @RenderBody()
+    
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    @await Html.PartialAsync("_notificationPartial")
 
-
-
-<script src="~/lib/jquery/dist/jquery.min.js"></script>
-<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-<script src="~/js/site.js" asp-append-version="true"></script>
-<script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-@await Html.PartialAsync("_notificationPartial")
-
-@await RenderSectionAsync("Scripts", required: false)
+    @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

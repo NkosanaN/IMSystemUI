@@ -2,23 +2,13 @@
 @{
     ViewData["Title"] = "Dashboard";
     Layout = "_LayoutDashboard";
+
+    int TotalNoItem = (int)ViewBag.TotalNoItem;
+    int TotalNoTransfer = (int)ViewBag.TotalNoTransfer;
+    int TotalNoMostUsedItems = (int)ViewBag.TotalNoMostUsedItems;
+    int TotalNoItemRepair = (int)ViewBag.TotalNoItemRepair;
+
 }
-@*<h1>@ViewData["Title"]</h1>*@
-
-@*<div class="text-center">
-    <h4 class="display-4">@ViewData["Title"]</h4>
-    <div class="card">
-        <div class="card-header">Items Per Shelve</div>
-        <div class="chart-container">
-            <canvas id="myChart" width="100" height="300"></canvas>
-        </div>
-        <div class="card-header">Items Per Shelve</div>
-        <div class="chart-container">
-            <canvas id="myChart2" width="100" height="300"></canvas>
-        </div>
-    </div>
-</div>*@
-
 
 <div class="container-fluid px-4">
     <h6 class="display-6">@ViewData["Title"]</h6>
@@ -26,7 +16,7 @@
         <div class="col-md-3">
             <div class="p-3 bg-white shadow-lg d-flex justify-content-around align-items-center rounded">
                 <div>
-                    <h3 class="fs-2">100</h3>
+                    <h3 class="fs-2">@TotalNoItem</h3>
                     <p class="fs-5">Total Items</p>
                 </div>
                 <div>
@@ -38,7 +28,7 @@
         <div class="col-md-3">
             <div class="p-3 bg-white shadow-lg d-flex justify-content-around align-items-center rounded">
                 <div>
-                    <h3 class="fs-2">2</h3>
+                    <h3 class="fs-2">@TotalNoTransfer</h3>
                     <p class="fs-5">Total Transfer</p>
                 </div>
                 <div>
@@ -49,7 +39,7 @@
         <div class="col-md-3">
             <div class="p-3 bg-white shadow-lg d-flex justify-content-around align-items-center rounded">
                 <div>
-                    <h3 class="fs-2">10</h3>
+                    <h3 class="fs-2">@TotalNoMostUsedItems</h3>
                     <p class="fs-5">Top 10 Used</p>
                 </div>
                 <div>
@@ -60,7 +50,7 @@
         <div class="col-md-3">
             <div class="p-3 bg-white shadow-lg d-flex justify-content-around align-items-center rounded">
                 <div>
-                    <h3 class="fs-2">3</h3>
+                    <h3 class="fs-2">@TotalNoItemRepair</h3>
                     <p class="fs-5">Repairs</p>
                 </div>
                 <div>
@@ -70,7 +60,7 @@
         </div>
 
         <div class="row my-5">
-            <div class="col-6 ">
+            <div class="col-12 ">
                 <div class="card">
                     <div class="fs-4 mb-3  card-header text-center">Items Per Shelve</div>
                     <div class="col card-body">
@@ -78,14 +68,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-6 ">
-                <div class="card">
-                    <div class="fs-4 mb-3  card-header text-center">Items Per Shelve</div>
-                    <div class="col card-body">
-                        <canvas id="myChart"></canvas>
-                    </div>
-                </div>
-            </div>
+            
         </div>
 
 
@@ -111,7 +94,7 @@
             }
         }
 
-                                        const ctx = document.getElementById('myChart').getContext('2d');
+        const ctx = document.getElementById('myChart').getContext('2d');
 
         new Chart(ctx, {
             type: 'bar',

@@ -1,4 +1,6 @@
-﻿using DocumentFormat.OpenXml.Math;
+﻿using DocumentFormat.OpenXml.EMMA;
+using DocumentFormat.OpenXml.Math;
+using DocumentFormat.OpenXml.Office2010.Excel;
 using IMSystemUI.Domain;
 using IMSystemUI.Service.Interfaces;
 using IMSystemUI.UI.Helpers;
@@ -28,7 +30,7 @@ namespace IMSystemUI.UI.Controllers
         public async Task<ActionResult> Index()
         {
             var data =
-                await _itemEmployeeAssignmentSrv.GetAllItemEmployeeAssignmentsAsync();
+                await _itemEmployeeAssignmentSrv.GetAllItemEmployeeAssignmentsAsync(Token);
 
             return View(data);
         }
@@ -37,25 +39,39 @@ namespace IMSystemUI.UI.Controllers
         public async Task<ActionResult> Details(Guid id)
         {
             var data =
-                await _itemEmployeeAssignmentSrv.GetAllItemEmployeeAssignmentAsync(id);
+                await _itemEmployeeAssignmentSrv.GetAllItemEmployeeAssignmentAsync(id, Token);
 
             return View(data);
         }
         public async Task<ActionResult> ViewItemTransferHistory(Guid id)
         {
             var data =
-                await _itemEmployeeAssignmentSrv.GetAllItemEmployeeAssignmentsAsync();
+                await _itemEmployeeAssignmentSrv.GetAllItemEmployeeAssignmentsAsync(Token);
 
             var query = data.Where(x => x.ItemId == id).ToList();
             ViewBag.StoreAssetId = id;
-
             return View(query);
+        }
+        public async Task<ActionResult> PrintToPdfAfterCreateITransfer(Guid item, Guid getITransferId)
+        {
+            var data =
+                await _itemEmployeeAssignmentSrv.GetAllItemEmployeeAssignmentsAsync(Token);
+
+            var query = data.Where(x => x.ItemId == item && x.AssigmentId == getITransferId).ToList();
+
+            var potrait = new ViewAsPdf(query)
+            {
+                FileName = "itemtransfer.pdf",
+                PageOrientation = Rotativa.AspNetCore.Options.Orientation.Portrait,
+                PageSize = Rotativa.AspNetCore.Options.Size.A4
+            };
+            return potrait;
         }
 
         public async Task<ActionResult> PrintToPdf(Guid id)
         {
             var data =
-                await _itemEmployeeAssignmentSrv.GetAllItemEmployeeAssignmentsAsync();
+                await _itemEmployeeAssignmentSrv.GetAllItemEmployeeAssignmentsAsync(Token);
 
             var query = data.Where(x => x.ItemId == id).ToList();
 
@@ -66,15 +82,13 @@ namespace IMSystemUI.UI.Controllers
                 PageSize = Rotativa.AspNetCore.Options.Size.A4
             };
             return potrait;
-
-
         }
         // GET: ItemEmployeeAssignmentController/Create
         public async Task<ActionResult> Create()
         {
-            var loadItems = await _itemSrv.GetAllItemsAsync();
+            var loadItems = await _itemSrv.GetAllItemsAsync(Token);
 
-            var loadUsers = await _userSrv.GetAllUsersAsync();
+            var loadUsers = await _userSrv.GetAllUsersAsync(Token);
 
             var dataUser = loadUsers
                 .AsQueryable()
@@ -119,13 +133,20 @@ namespace IMSystemUI.UI.Controllers
         {
             try
             {
-                //string s = "72901290-6252-4b60-b8fe-c07d9d73029c";
+                //should we decrease Qty if we perform iTransfer
+                //oh all the items are unique  even tho they might belong in one group
+                //i.e hammers will deffer with serial no :  xx-11
+                //..........................................xx-22
+                //using this method will help us to track extract item which is in repair 
 
-                //Guid.(s, r )
-                //model.IssuerBy!.Id = 
-                await _itemEmployeeAssignmentSrv.CreateItemEmployeeAssignmentAsync(model);
+                model.IssuerById = CreatedById;
+                model.ReceiverById = model.ReceiverById;
 
-                Notify($"Successful created new item transfer to {model.ReceiverBy!.Firstname}-{model.ReceiverBy.Lastname} .", type: NotificationType.success);
+              var getITransferId = await _itemEmployeeAssignmentSrv.CreateItemEmployeeAssignmentAsync(model, Token);
+
+                Notify("iTransfer","Successful created new item transfer .", type: NotificationType.success);
+
+                //await PrintToPdfAfterCreateITransfer(model.ItemId, getITransferId.ItemId);
 
                 return RedirectToAction(nameof(Index));
             }
@@ -134,22 +155,16 @@ namespace IMSystemUI.UI.Controllers
                 const string msg = ResponseMessageCodes.ErrorMsg;
                 var errorDescription = ResponseMessageCodes.ErrorDictionary[msg];
 
-                Notify(errorDescription, type: NotificationType.error);
-
-                return View();
+                Notify("iTransfer",errorDescription, type: NotificationType.error);
             }
-        }
 
-        // GET: ItemEmployeeAssignmentController/Edit/5
-        public async Task<ActionResult> Edit(Guid id, Guid itemId)
-        {
-            var loadItems = await _itemSrv.GetAllItemsAsync();
+            var loadItems = await _itemSrv.GetAllItemsAsync(Token);
 
-            var loadUsers = await _userSrv.GetAllUsersAsync();
+            var loadUsers = await _userSrv.GetAllUsersAsync(Token);
 
             var dataUser = loadUsers
                 .AsQueryable()
-                .Select(x => new { Value = x.Id, Text = $"{x.Firstname} - ({x.Lastname})"})
+                .Select(x => new { Value = x.Id, Text = $"{x.Firstname} - ({x.Lastname})" })
                 .ToList();
 
             var dataItem = loadItems
@@ -173,8 +188,47 @@ namespace IMSystemUI.UI.Controllers
 
             ViewBag.itemList = ItemsList;
 
-            var data = await _itemEmployeeAssignmentSrv.GetAllItemEmployeeAssignmentAsync(id);
 
+            return View();
+        }
+
+        // GET: ItemEmployeeAssignmentController/Edit/5
+        public async Task<ActionResult> Edit(Guid id, Guid itemId)
+        {
+            var data = await _itemEmployeeAssignmentSrv.GetAllItemEmployeeAssignmentAsync(id, Token);
+
+            if (!data.DateReturned.HasValue) data.DateReturned = Convert.ToDateTime(DateTime.Now.ToString("yyyy-MM-dd"));
+
+            var loadItems = await _itemSrv.GetAllItemsAsync(Token);
+
+            var loadUsers = await _userSrv.GetAllUsersAsync(Token);
+
+            var dataUser = loadUsers
+                .AsQueryable()
+                .Select(x => new { Value = x.Id, Text = $"{x.Firstname} - ({x.Lastname})" })
+                .ToList();
+
+            var dataItem = loadItems
+                .AsQueryable()
+                .Select(x => new { Value = x.ItemId, Text = x.Name })
+                .ToList();
+
+            UserList = dataUser.Select(i => new SelectListItem
+            {
+                Text = i.Text,
+                Value = i.Value!.ToString()
+            });
+
+            ItemsList = dataItem.Select(i => new SelectListItem
+            {
+                Text = i.Text,
+                Value = i.Value!.ToString()
+            });
+
+            ViewBag.issuerList = UserList;
+
+            ViewBag.itemList = ItemsList;
+            
             return View(data);
         }
 
@@ -197,7 +251,7 @@ namespace IMSystemUI.UI.Controllers
         public async Task<ActionResult> Delete(Guid id)
         {
             var data =
-                await _itemEmployeeAssignmentSrv.GetAllItemEmployeeAssignmentAsync(id);
+                await _itemEmployeeAssignmentSrv.GetAllItemEmployeeAssignmentAsync(id, Token);
 
             return View(data);
         }
@@ -209,13 +263,29 @@ namespace IMSystemUI.UI.Controllers
         {
             try
             {
-                await _itemEmployeeAssignmentSrv.RemoveItemEmployeeAssignmentAsync(id);
+                await _itemEmployeeAssignmentSrv.RemoveItemEmployeeAssignmentAsync(id, Token);
                 return RedirectToAction(nameof(Index));
             }
             catch
             {
                 return View();
             }
+        }
+
+        public async Task<ActionResult> ReturnItem(Guid id, string note)
+        {
+            var data = await _itemEmployeeAssignmentSrv.GetAllItemEmployeeAssignmentAsync(id, Token);
+
+            data.IssuerById = data.IssuerBy!.Id.ToString();
+            data.ReceiverById = data.ReceiverBy!.Id.ToString();
+            data.IsReturned = true;
+            data.Condition = note;
+
+            var r = await _itemEmployeeAssignmentSrv.ReturnItem(data, Token);
+
+            Notify("iItem", "Item  has been booked for Repair .", type: NotificationType.info);
+
+            return Ok(new { success = r });
         }
     }
 }

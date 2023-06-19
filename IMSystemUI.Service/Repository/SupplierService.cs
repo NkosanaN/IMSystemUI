@@ -3,14 +3,11 @@ using IMSystemUI.Service.Interfaces;
 using Newtonsoft.Json;
 using System.Net.Http.Headers;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace IMSystemUI.Service.Repository;
 
 public class SupplierService : ISupplierService
 {
-    readonly string bearerToken = Constant.token;
-
     private readonly HttpClient _client;
     private const string apiUrl = "http://localhost:5293/api";
 
@@ -19,12 +16,11 @@ public class SupplierService : ISupplierService
         _client = client ?? throw new ArgumentNullException(nameof(client));
     }
 
-    public async Task<IEnumerable<Supplier>> GetAllSupplierAsync()
+    public async Task<IEnumerable<Supplier>> GetAllSupplierAsync(string token)
     {
         try
         {
-            _client.DefaultRequestHeaders.Authorization = new
-                AuthenticationHeaderValue("Bearer", bearerToken);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
             var httpResponse = await _client.GetAsync($"{apiUrl}/Supplier");
 
@@ -45,12 +41,11 @@ public class SupplierService : ISupplierService
         }
     }
 
-    public async Task<Supplier> GetSupplierAsync(Guid id)
+    public async Task<Supplier> GetSupplierAsync(Guid id, string token)
     {
         try
         {
-            _client.DefaultRequestHeaders.Authorization = new
-                AuthenticationHeaderValue("Bearer", bearerToken);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
             var httpResponse = await _client.GetAsync($"{apiUrl}/Supplier/{id}");
 
@@ -71,10 +66,9 @@ public class SupplierService : ISupplierService
         }
     }
 
-    public async Task RemoveSupplierAsync(Guid id)
+    public async Task RemoveSupplierAsync(Guid id, string token)
     {
-        _client.DefaultRequestHeaders.Authorization = new
-            AuthenticationHeaderValue("Bearer", bearerToken);
+        _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
         var httpResponse = await _client.DeleteAsync($"{apiUrl}/Supplier/{id}");
 
@@ -84,17 +78,15 @@ public class SupplierService : ISupplierService
         }
     }
 
-    public async Task<Supplier> CreateSupplierAsync(Supplier supplier)
+    public async Task<Supplier> CreateSupplierAsync(Supplier supplier, string token)
     {
         try
         {
             var content = JsonConvert.SerializeObject(supplier);
 
-            _client.DefaultRequestHeaders.Authorization = new
-                AuthenticationHeaderValue("Bearer", bearerToken);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
-            var httpResponse = await _client.PostAsync($"{apiUrl}/Supplier",
-                new StringContent(content, Encoding.Default, "application/json"));
+            var httpResponse = await _client.PostAsync($"{apiUrl}/Supplier", new StringContent(content, Encoding.Default, "application/json"));
 
             if (!httpResponse.IsSuccessStatusCode)
             {
@@ -112,14 +104,13 @@ public class SupplierService : ISupplierService
         }
     }
 
-    public async Task UpdateSupplierAsync(Guid id, Supplier supplier)
+    public async Task UpdateSupplierAsync(Guid id, Supplier supplier, string token)
     {
         try
         {
             var content = JsonConvert.SerializeObject(supplier);
 
-            _client.DefaultRequestHeaders.Authorization = new
-                AuthenticationHeaderValue("Bearer", bearerToken);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
             var httpResponse = await _client.PutAsync($"{apiUrl}/Supplier/{id}",
                 new StringContent(content, Encoding.Default, "application/json"));

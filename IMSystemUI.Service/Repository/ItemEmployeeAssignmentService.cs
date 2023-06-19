@@ -8,20 +8,19 @@ namespace IMSystemUI.Service.Repository;
 
 public class ItemEmployeeAssignmentService : IItemEmployeeAssignmentService
 {
-    readonly string bearerToken = Constant.token;
-
     private readonly HttpClient _client;
     private const string apiUrl = "http://localhost:5293/api";
+
     public ItemEmployeeAssignmentService(HttpClient client)
     {
         _client = client ?? throw new ArgumentNullException(nameof(client));
     }
-    public async Task<IEnumerable<ItemEmployeeAssignment>> GetAllItemEmployeeAssignmentsAsync()
+
+    public async Task<IEnumerable<ItemEmployeeAssignment>> GetAllItemEmployeeAssignmentsAsync(string token)
     {
         try
         {
-            _client.DefaultRequestHeaders.Authorization = new
-                AuthenticationHeaderValue("Bearer", bearerToken);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
             var httpResponse = await _client.GetAsync($"{apiUrl}/ItemEmployeeAssignment");
 
@@ -42,12 +41,11 @@ public class ItemEmployeeAssignmentService : IItemEmployeeAssignmentService
         }
     }
 
-    public async Task<ItemEmployeeAssignment> GetAllItemEmployeeAssignmentAsync(Guid id)
+    public async Task<ItemEmployeeAssignment> GetAllItemEmployeeAssignmentAsync(Guid id, string token)
     {
         try
         {
-            _client.DefaultRequestHeaders.Authorization = new
-                AuthenticationHeaderValue("Bearer", bearerToken);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
             var httpResponse = await _client.GetAsync($"{apiUrl}/ItemEmployeeAssignment/{id}");
 
@@ -68,11 +66,15 @@ public class ItemEmployeeAssignmentService : IItemEmployeeAssignmentService
         }
     }
 
-    public async Task<ItemEmployeeAssignment> CreateItemEmployeeAssignmentAsync(ItemEmployeeAssignment itemTransfer)
+    public async Task<ItemEmployeeAssignment> CreateItemEmployeeAssignmentAsync(ItemEmployeeAssignment itemTransfer,
+        string token)
     {
         try
         {
             var content = JsonConvert.SerializeObject(itemTransfer);
+
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
             var httpResponse = await _client.PostAsync($"{apiUrl}/ItemEmployeeAssignment",
                 new StringContent(content, Encoding.Default, "application/json"));
 
@@ -92,13 +94,40 @@ public class ItemEmployeeAssignmentService : IItemEmployeeAssignmentService
         }
     }
 
-    public async Task RemoveItemEmployeeAssignmentAsync(Guid id)
+    public async Task RemoveItemEmployeeAssignmentAsync(Guid id, string token)
     {
+        _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
         var httpResponse = await _client.DeleteAsync($"{apiUrl}/ItemEmployeeAssignment/{id}");
 
         if (!httpResponse.IsSuccessStatusCode)
         {
             throw new Exception("Cannot delete the ItemEmployeeAssignment");
+        }
+    }
+
+    public async Task<bool> ReturnItem(ItemEmployeeAssignment iItem, string token)
+    {
+        try
+        {
+            var content = JsonConvert.SerializeObject(iItem);
+
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            var httpResponse = await _client.PutAsync($"{apiUrl}/ItemEmployeeAssignment/{iItem.AssigmentId}/ReturnItem",
+                new StringContent(content, Encoding.Default, "application/json"));
+
+            if (!httpResponse.IsSuccessStatusCode)
+            {
+                throw new Exception("Cannot Book for Return Item.");
+            }
+
+            return true;
+
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
         }
     }
 }

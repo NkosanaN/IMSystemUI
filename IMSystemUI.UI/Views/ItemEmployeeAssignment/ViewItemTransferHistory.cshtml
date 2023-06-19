@@ -37,11 +37,11 @@
                     <td>@Html.DisplayFor(modelItem => item.DateTaken)</td>
                     <td>
                         @{
-                            noneClass = "fa fa-times text-center";
+                            //noneClass = "fa fa-times text-center";
                             if (item.DateReturned.HasValue)
                             {
-                                date = item.DateReturned.Value.ToString();
-                                noneClass = string.Empty;
+                                date = item.DateReturned.Value.Date.ToShortDateString();
+                                //noneClass = string.Empty;
                             }
 
                         }

@@ -1,6 +1,7 @@
 ﻿using IMSystemUI.Domain;
 using IMSystemUI.Service.Interfaces;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System.Net.Http.Headers;
 using System.Text;
 
@@ -8,23 +9,18 @@ namespace IMSystemUI.Service.Repository;
 
 public class UserService : IUserService
 {
-    readonly string bearerToken = Constant.token;
-
     private readonly HttpClient _client;
     private const string apiUrl = "http://localhost:5293/api";
-
-
     public UserService(HttpClient client)
     {
         _client = client ?? throw new ArgumentNullException(nameof(client));
     }
 
-    public async Task<IEnumerable<User>> GetAllUsersAsync()
+    public async Task<IEnumerable<User>> GetAllUsersAsync(string token)
     {
         try
         {
-            _client.DefaultRequestHeaders.Authorization = new
-                AuthenticationHeaderValue("Bearer", bearerToken);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
             var httpResponse = await _client.GetAsync($"{apiUrl}/User");
 
@@ -51,8 +47,8 @@ public class UserService : IUserService
         try
         {
             var content = JsonConvert.SerializeObject(reg);
-            var httpResponse = await _client.PostAsync($"{apiUrl}/Account/Register",
-                new StringContent(content, Encoding.Default, "application/json"));
+
+            var httpResponse = await _client.PostAsync($"{apiUrl}/Account/Register", new StringContent(content, Encoding.Default, "application/json"));
 
             if (!httpResponse.IsSuccessStatusCode)
             {
@@ -99,7 +95,28 @@ public class UserService : IUserService
     //        throw;
     //    }
     //}
+    public async Task LogoutAsync()
+    {
+        try
+        {
+            var httpResponse = await _client.GetAsync($"{apiUrl}/Account/Logout");
 
+            if (!httpResponse.IsSuccessStatusCode)
+            {
+                throw new Exception("Cannot Logout ");
+            }
+
+            var content = await httpResponse.Content.ReadAsStringAsync();
+
+            var user = JsonConvert.DeserializeObject<IEnumerable<User>>(content);
+
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
+    }
 
     public Task RemoveUserAsync(Guid id)
     {

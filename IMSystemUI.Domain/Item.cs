@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace IMSystemUI.Domain
 {
@@ -21,6 +22,8 @@ namespace IMSystemUI.Domain
         [DisplayName("Item Tag")]
         public string? ItemTag { get; set; }
         public float Cost { get; set; } = 0.00f;//should be uniqueCost
+
+        [NotMapped]
         public ShelveType? ShelveBy { get; set; }
 
         [DisplayName("Quantity")]
@@ -31,8 +34,10 @@ namespace IMSystemUI.Domain
 
         [DisplayName("is Due for Repair")]
         public bool DueforRepair { get; set; }
+        //public string RepairMessage { get; set; }
+        public Guid CreatedById { get; set; }
 
-        public string CreatedById { get; set; }
+        public Guid ShelfId { get; set; }
         public User? CreatedBy { get; set; }
 
     }

@@ -17,14 +17,14 @@ namespace IMSystemUI.UI.Controllers
         // GET: SupplierController
         public async Task<ActionResult> Index()
         {
-            var data = await _supplierSrv.GetAllSupplierAsync();
+            var data = await _supplierSrv.GetAllSupplierAsync(Token);
             return View(data);
         }
 
         // GET: SupplierController/Details/5
         public async Task<ActionResult> Details(Guid id)
         {
-            var data = await _supplierSrv.GetSupplierAsync(id);
+            var data = await _supplierSrv.GetSupplierAsync(id, Token);
 
             return View(data);
         }
@@ -42,7 +42,7 @@ namespace IMSystemUI.UI.Controllers
         {
             try
             {
-                await _supplierSrv.CreateSupplierAsync(model);
+                await _supplierSrv.CreateSupplierAsync(model, Token);
 
                 Notify("Successful created new supplier .", type: NotificationType.success);
 
@@ -62,7 +62,7 @@ namespace IMSystemUI.UI.Controllers
         // GET: SupplierController/Edit/5
         public async Task<ActionResult> Edit(Guid id)
         {
-            var data = await _supplierSrv.GetSupplierAsync(id);
+            var data = await _supplierSrv.GetSupplierAsync(id, Token);
 
 
 
@@ -76,7 +76,7 @@ namespace IMSystemUI.UI.Controllers
         {
             try
             {
-                await _supplierSrv.UpdateSupplierAsync(SupplierId, model);
+                await _supplierSrv.UpdateSupplierAsync(SupplierId, model, Token);
 
                 Notify("supplier info .", "Successful updated supplier.", type: NotificationType.info);
 
@@ -96,7 +96,7 @@ namespace IMSystemUI.UI.Controllers
         // GET: SupplierController/Delete/5
         public async Task<ActionResult> Delete(Guid id)
         {
-            var data = await _supplierSrv.GetSupplierAsync(id);
+            var data = await _supplierSrv.GetSupplierAsync(id, Token);
 
             return View(data);
         }
@@ -108,7 +108,7 @@ namespace IMSystemUI.UI.Controllers
         {
             try
             {
-                await _supplierSrv.RemoveSupplierAsync(id);
+                await _supplierSrv.RemoveSupplierAsync(id, Token);
                 
                 Notify("Successful removed supplier .", type: NotificationType.info);
 

@@ -8,8 +8,6 @@ namespace IMSystemUI.Service.Repository;
 
 public class ItemService : IItemService
 {
-    readonly string bearerToken = Constant.token;
-
     private readonly HttpClient _client;
     private const string apiUrl = "http://localhost:5293/api";
 
@@ -17,12 +15,11 @@ public class ItemService : IItemService
     {
         _client = client ?? throw new ArgumentNullException(nameof(client));
     }
-    public async Task<IEnumerable<Item>> GetAllItemsAsync()
+    public async Task<IEnumerable<Item>> GetAllItemsAsync(string token)
     {
         try
         {
-            _client.DefaultRequestHeaders.Authorization = new
-                AuthenticationHeaderValue("Bearer", bearerToken);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
             var httpResponse = await _client.GetAsync($"{apiUrl}/Item");
 
@@ -42,14 +39,13 @@ public class ItemService : IItemService
             throw;
         }
     }
-    public async Task<Item> GetAllItemAsync(Guid id)
+    public async Task<Item> GetAllItemAsync(Guid id, string token)
     {
         try
         {
-            _client.DefaultRequestHeaders.Authorization = new
-                AuthenticationHeaderValue("Bearer", bearerToken);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
-            var httpResponse = await _client.GetAsync($"{apiUrl}/Items/{id}");
+            var httpResponse = await _client.GetAsync($"{apiUrl}/Item/{id}");
 
             if (!httpResponse.IsSuccessStatusCode)
             {
@@ -68,21 +64,19 @@ public class ItemService : IItemService
         }
     }
 
-    public async Task<Item> CreateItemAsync(Item item)
+    public async Task<Item> CreateItemAsync(Item item, string token)
     {
         try
         {
             var content = JsonConvert.SerializeObject(item);
 
-            _client.DefaultRequestHeaders.Authorization = new
-                AuthenticationHeaderValue("Bearer", bearerToken);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
-            var httpResponse = await _client.PostAsync($"{apiUrl}/Item",
-                new StringContent(content, Encoding.Default, "application/json"));
+            var httpResponse = await _client.PostAsync($"{apiUrl}/Item", new StringContent(content, Encoding.Default, "application/json"));
 
             if (!httpResponse.IsSuccessStatusCode)
             {
-                throw new Exception("Cannot create the Supplier");
+                throw new Exception("Cannot create new the Item");
             }
 
             var createdItem =
@@ -96,8 +90,10 @@ public class ItemService : IItemService
         }
     }
 
-    public async Task RemoveItemAsync(Guid id)
+    public async Task RemoveItemAsync(Guid id, string token)
     {
+        _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
         var httpResponse = await _client.DeleteAsync($"{apiUrl}/Item/{id}");
 
         if (!httpResponse.IsSuccessStatusCode)
@@ -105,4 +101,51 @@ public class ItemService : IItemService
             throw new Exception("Cannot delete the Item");
         }
     }
+
+    public async Task<bool> BookRepair(Item item, string token)
+    {
+        try
+        {
+            var content = JsonConvert.SerializeObject(item);
+
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            var httpResponse = await _client.PutAsync($"{apiUrl}/Item/{item.ItemId}/BookRepairItem",
+                new StringContent(content, Encoding.Default, "application/json"));
+
+            if (!httpResponse.IsSuccessStatusCode)
+            {
+                throw new Exception("Cannot update the Item");
+            }
+            return true;
+
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
+    }
+    public async Task UpdateItemAsync(Guid id, Item item, string token)
+    {
+        try
+        {
+            var content = JsonConvert.SerializeObject(item);
+
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            var httpResponse = await _client.PutAsync($"{apiUrl}/Item/{id}", new StringContent(content, Encoding.Default, "application/json"));
+
+            if (!httpResponse.IsSuccessStatusCode)
+            {
+                throw new Exception("Cannot update the ShelveType");
+            }
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
+    }
 }
+

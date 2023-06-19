@@ -13,8 +13,12 @@
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/select/1.6.2/css/select.dataTables.min.css" />
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/buttons/2.3.6/css/buttons.dataTables.min.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" integrity="sha512-KfkfwYDsLkIlwQp6LFnl8zNdLGxu9YAA1QvwINks4PhcElQSvqcyVLLD9aMhXd13uQjoXtEKNosOWaZqXgel0g==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-</head>
 
+
+</head>
+@{
+    string token = (string)ViewBag.token;
+}
 
 <body>
 
@@ -26,7 +30,7 @@
         @*<input class="form-control form-control-dark w-100" type="text" placeholder="Search" aria-label="Search">*@
         <div class="navbar-nav">
             <div class="nav-item text-nowrap">
-                <a class="nav-link px-3" href="#">Sign out</a>
+                <a class="nav-link px-3" asp-action="Logout" asp-controller="Account">Sign out</a>
             </div>
         </div>
     </header>
@@ -43,7 +47,7 @@
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link shelve" href="/ShelveType/Index">
+                            <a class="nav-link shelve" asp-controller="ShelveType" asp-action="Index" asp-route-token="@token">
                                 <span data-feather="file"><i class="fa fa-file-text fa-fw fs-1x" aria-hidden="true"></i></span>
                                 Shelve
                             </a>
@@ -81,7 +85,7 @@
             </main>
         </div>
     </div>
-    
+
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
 
     <script type="text/javascript">
@@ -100,11 +104,11 @@
 
     <script type="text/javascript" src="https://cdn.datatables.net/v/dt/dt-1.11.5/datatables.min.js"></script>
     <script type="text/javascript" src="https://cdn.datatables.net/buttons/1.2.1/js/dataTables.buttons.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-<script src="~/js/site.js" asp-append-version="true"></script>
-@await Html.PartialAsync("_notificationPartial")
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await Html.PartialAsync("_notificationPartial")
 
     @await RenderSectionAsync("Scripts", required: false)
 </body>

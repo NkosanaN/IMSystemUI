@@ -8,25 +8,25 @@ using Newtonsoft.Json.Linq;
 using IMSystemUI.Domain;
 using IMSystemUI.Service.Interfaces;
 using IMSystemUI.UI.Helpers;
+using System.Net.Http;
+using Microsoft.AspNetCore.Http;
+using DocumentFormat.OpenXml.Spreadsheet;
 
 namespace IMSystemUI.UI.Controllers
 {
     //https://learn.microsoft.com/en-us/aspnet/core/fundamentals/app-state?view=aspnetcore-7.0
     public class AccountController : BaseController
     {
-        //private readonly HttpClient _httpClient;
-        //private readonly IHttpContextAccessor _httpContextAccessor;
-        public const string SessionKeyName = "_id";
-
-        //public AccountController(/*IHttpClientFactory httpClientFactory, IHttpContextAccessor httpContextAccessor*/)
-        //{
-        //    //_httpClient = httpClientFactory.CreateClient();
-        //    //_httpContextAccessor = httpContextAccessor;
-        //}
+        private readonly HttpClient _httpClient;
         private readonly IUserService _userSrv;
-        public AccountController(IUserService userSrv)
+        public AccountController(IHttpClientFactory httpClientFactory, IUserService userSrv)
         {
+            _httpClient = httpClientFactory.CreateClient();
             _userSrv = userSrv;
+        }
+        public async Task<ActionResult> Login()
+        {
+            return View();
         }
 
         [HttpPost]
@@ -35,51 +35,56 @@ namespace IMSystemUI.UI.Controllers
             //var apiBaseUrl = _configuration.GetValue<string>("ApiBaseUrl");
             //var apiEndpoint = _configuration.GetValue<string>("ApiEndpoint");
 
-            //var apiBaseUrl = "http://localhost:5293/api";
-            //var apiEndpoint = "Account/login";
+            var apiBaseUrl = "http://localhost:5293/api";
+            var apiEndpoint = "Account/login";
 
-            //// Call the API to authenticate the user and get a JWT token
-            //var credentials = new { email = user.Email, password = user.Password };
-            //var credentialsJson = JsonConvert.SerializeObject(credentials);
-            //var content = new StringContent(credentialsJson, Encoding.UTF8, "application/json");
-            //var response = await _httpClient.PostAsync($"{apiBaseUrl}/{apiEndpoint}", content);
-            //var responseJson = await response.Content.ReadAsStringAsync();
-            //var json = (JObject)JsonConvert.DeserializeObject(responseJson);
+            // Call the API to authenticate the user and get a JWT token
+            var credentials = new { email = user.Email, password = user.Password };
+            var credentialsJson = JsonConvert.SerializeObject(credentials);
+            var content = new StringContent(credentialsJson, Encoding.UTF8, "application/json");
+            var response = await _httpClient.PostAsync($"{apiBaseUrl}/{apiEndpoint}", content);
+            var responseJson = await response.Content.ReadAsStringAsync();
+            var json = (JObject)JsonConvert.DeserializeObject(responseJson);
 
-            //if (json!["token"] == null)
-            //{
-            //    ModelState.AddModelError("", "Invalid credentials");
-            //    return View();
-            //}
+            if (json!["token"] == null)
+            {
+                ModelState.AddModelError("", "Invalid credentials");
 
-            //var token = json["token"]!.ToString();
+                Notify("info", "Invalid credentials" , NotificationType.error);
+                return View();
+            }
 
-            //if (string.IsNullOrEmpty(token))
-            //{
-            //    ModelState.AddModelError("", "Invalid credentials");
-            //    return View();
-            //}
+            var token = json["token"]!.ToString();
 
-            //// Decrypt the JWT token to authenticate the user
-            //var handler = new JwtSecurityTokenHandler();
-            //var jwt = handler.ReadJwtToken(token);
-            //var claims = jwt.Claims;
+            if (string.IsNullOrEmpty(token))
+            {
+                ModelState.AddModelError("", "Invalid credentials");
+             //   return View();
+            }
+
+            // Decrypt the JWT token to authenticate the user
+            var handler = new JwtSecurityTokenHandler();
+            var jwt = handler.ReadJwtToken(token);
+            var claims = jwt.Claims;
             //var identity = new ClaimsIdentity(claims, "JWT");
 
-            ////_httpContextAccessor.HttpContext!.Request.Headers.Add("Authorization", $"Bearer {token}");
+            _httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {token}");
 
-            //_httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {token}");
+            var authProperties = new AuthenticationProperties
+            {
+                ExpiresUtc = DateTimeOffset.UtcNow.AddDays(1),
+                IsPersistent = true,
+                IssuedUtc = DateTimeOffset.UtcNow
+            };
+            
+            HttpContext!.Session.SetString("SessionToken", token);
+            HttpContext!.Session.SetString("SessionName", claims.ElementAt(1).Value.ToString());
 
-            //var authProperties = new AuthenticationProperties
-            //{
-            //    ExpiresUtc = DateTimeOffset.UtcNow.AddDays(1),
-            //    IsPersistent = true,
-            //    IssuedUtc = DateTimeOffset.UtcNow
-            //};
-
-            //HttpContext!.Session.SetString("token", token);
-            //HttpContext.Session.SetString(SessionKeyName, identity.Claims.ElementAt(1).Value.ToString());
             return RedirectToAction("DashboardData", "Home");
+        }
+        public async Task<ActionResult> RegisterUser()
+        {
+            return View();
         }
 
         [HttpPost]
@@ -89,16 +94,27 @@ namespace IMSystemUI.UI.Controllers
             {
                 user.Username = user.Email;
                 await _userSrv.RegisterUser(user);
-
+                Notify("info", "Successful Added new User", NotificationType.info);
             }
             catch (Exception e)
             {
                 Console.WriteLine(e);
-                throw;
-            }
+                const string msg = ResponseMessageCodes.ErrorMsg;
+                var errorDescription = ResponseMessageCodes.ErrorDictionary[msg];
 
-          
-            return View("Msg");
+                Notify("info", errorDescription, type: NotificationType.error);
+            }
+            return RedirectToAction("Login", "Account");
+            
+        }
+
+        public async Task<ActionResult> Logout()
+        {
+            await HttpContext!.SignOutAsync();
+            HttpContext.Session.Remove("SessionToken");
+            HttpContext.Session.Remove("SessionName");
+
+            return View();
         }
     }
 }

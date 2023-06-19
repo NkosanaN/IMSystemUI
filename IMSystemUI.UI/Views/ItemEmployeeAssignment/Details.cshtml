@@ -33,7 +33,7 @@
             <th>@Html.DisplayNameFor(model => model.Item!.Name)</th>
             <th>@Html.DisplayNameFor(model => model.Item!.Serialno)</th>
             <th>@Html.DisplayNameFor(model => model.Item!.Description)</th>
-            <th>@Html.DisplayNameFor(model => model.ReturnedCondition)</th>
+            <th>@Html.DisplayNameFor(model => model.Condition)</th>
             <th>@Html.DisplayNameFor(model => model.ResonForNotReturn)</th>
             <th>@Html.DisplayNameFor(model => model.Item!.DueforRepair)</th>
         </tr>
@@ -45,8 +45,8 @@
             <td> @Html.DisplayFor(model =>   model.Item!.Description)</td>
             <td>
                 @{
-                    returnCondiction = Model!.ReturnedCondition;
-                    if (string.IsNullOrEmpty(Model.ReturnedCondition))
+                        returnCondiction = Model!.Condition;
+                        if (string.IsNullOrEmpty(Model.Condition))
                         returnCondiction = "N/A";
                 }
                 <text>@returnCondiction</text>

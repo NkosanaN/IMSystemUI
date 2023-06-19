@@ -2,40 +2,28 @@
 using IMSystemUI.Service.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using System.Net.Http.Headers;
 using System.Text;
-using System.Xml.Linq;
 
 namespace IMSystemUI.Service.Repository;
 
 public class DepartmentService : IDepartmentService
 {
-    private readonly string bearerToken = Constant.token;
-
-
     private readonly HttpClient _client;
     private readonly IHttpContextAccessor _httpContextAccessor;
 
     private const string apiUrl = "http://localhost:5293/api";
 
-    public DepartmentService(HttpClient client , IHttpContextAccessor httpContextAccessor)
+    public DepartmentService(HttpClient client)
     {
         _client = client ?? throw new ArgumentNullException(nameof(client));
-        _httpContextAccessor = httpContextAccessor;
     }
 
-    public async Task<IEnumerable<Department>> GetAllDepartmentsAsync()
+    public async Task<IEnumerable<Department>> GetAllDepartmentsAsync(string token)
     {
         try
         {
-
-           var t = _httpContextAccessor.HttpContext.User.Identity.Name;
-           //var t = _httpContextAccessor.HttpContext.User;
-           //var t = _httpContextAccessor.HttpContext.User.Identity.Name;
-
-            _client.DefaultRequestHeaders.Authorization = new
-                AuthenticationHeaderValue("Bearer", bearerToken);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
             var httpResponse = await _client.GetAsync($"{apiUrl}/Department");
 
@@ -57,12 +45,11 @@ public class DepartmentService : IDepartmentService
         }
     }
 
-    public async Task<Department> GetAllDepartmentAsync(Guid id)
+    public async Task<Department> GetAllDepartmentAsync(Guid id, string token)
     {
         try
         {
-            _client.DefaultRequestHeaders.Authorization = new
-                AuthenticationHeaderValue("Bearer", bearerToken);
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
             var httpResponse = await _client.GetAsync($"{apiUrl}/Department");
 
@@ -84,11 +71,13 @@ public class DepartmentService : IDepartmentService
         }
     }
 
-    public async Task<Department> CreateDepartmentAsync(Department department)
+    public async Task<Department> CreateDepartmentAsync(Department department, string token)
     {
         try
         {
             var content = JsonConvert.SerializeObject(department);
+
+            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
             var httpResponse = await _client.PostAsync($"{apiUrl}/Department",
                 new StringContent(content, Encoding.Default, "application/json"));
@@ -110,8 +99,9 @@ public class DepartmentService : IDepartmentService
         }
     }
 
-    public async Task RemoveDepartmentAsync(Guid id)
+    public async Task RemoveDepartmentAsync(Guid id , string token)
     {
+        _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
         var httpResponse = await _client.DeleteAsync($"{apiUrl}/Department/{id}");
 
         if (!httpResponse.IsSuccessStatusCode)

@@ -3,43 +3,46 @@
 
 <div class="container">
     <div class="row">
-        <div class="col-md-6 mt-60 mx-md-auto">
+        <div class="col-md-6 mt-5 mx-md-auto">
             <div class="login-box">
                 <div class="form-wrap bg-white">
-                    <h4 class="btm-sep pb-3 mb-5">Login</h4>
+                    <h4 class="btm-sep pb-3 mb-5 text-center">Register</h4>
                     <form asp-action="RegisterUser" asp-controller="Account">
-                        <div class="input-group d-grid gap-2">
-                            
+                        <div class="d-grid gap-2">
+
                             <div class="form-group row">
                                 <div class="input-group">
-                                    <div class="input-group-text"><i class="fa-solid fa-envelope"></i></div>
+                                    <div class="input-group-text"><i class="fa fa-user"></i></div>
                                     <input type="text" asp-for="FirstName" class="form-control" placeholder="Name">
                                 </div>
                             </div>
-                            
+
                             <div class="form-group row">
                                 <div class="input-group">
-                                    <div class="input-group-text"><i class="fa-solid fa-envelope"></i></div>
+                                    <div class="input-group-text"><i class="fa fa-user"></i></div>
                                     <input type="text" asp-for="LastName" class="form-control" placeholder="Surname">
                                 </div>
                             </div>
-                            
+
+
                             <div class="form-group row">
                                 <div class="input-group">
                                     <div class="input-group-text"><i class="fa-solid fa-envelope"></i></div>
                                     <input type="text" asp-for="Email" class="form-control" placeholder="Email">
                                 </div>
                             </div>
-
-                            <div class="input-group row">
+                            
+                            
+                            <div class="form-group row">
                                 <div class="input-group">
-                                    <div class="input-group-text"><i class="fa-bar-chart"></i></div>
+                                    <div class="input-group-text"><i class="fa fa-key"></i></div>
                                     <input type="password" asp-for="Password" class="form-control" placeholder="Password">
                                 </div>
                             </div>
+
                         </div>
                         <i class="gap-4 row m-2"></i>
-                        <button type="submit" class="btn btn-primary gap-3 col-12">Register User</button>
+                        <button type="submit" class="btn btn-primary gap-3 col-12 shadow-lg">Register User</button>
                     </form>
                 </div>
             </div>

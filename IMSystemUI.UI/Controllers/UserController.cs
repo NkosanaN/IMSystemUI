@@ -13,8 +13,8 @@ namespace IMSystemUI.UI.Controllers
         }
         public async Task<ActionResult> Index()
         {
-            var data = await _userSrv.GetAllUsersAsync();
-            return View(data);
+            //var data = await _userSrv.GetAllUsersAsync(Token);
+            return View(/*data*/);
         }
         // GET: UserController
         //public async Task<ActionResult> Login(Login user)

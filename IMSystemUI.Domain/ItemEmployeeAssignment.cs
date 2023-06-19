@@ -10,9 +10,12 @@ namespace IMSystemUI.Domain
 
         [DisplayName("IssuerBy")]
         public User? IssuerBy { get; set; }
+        public string IssuerById { get; set; } = string.Empty;
 
         [DisplayName("ReceiverBy")]
         public User? ReceiverBy { get; set; }
+        public string ReceiverById { get; set; } = string.Empty;
+
         public Guid ItemId { get; set; }
         public Item? Item { get; set; }
 
@@ -26,7 +29,7 @@ namespace IMSystemUI.Domain
         public DateTime? DateReturned { get; set; }
 
         [DisplayName("Return Condition")]
-        public string? ReturnedCondition { get; set; }
+        public string? Condition { get; set; }
 
         [DisplayName("Reason For Not Return")]
         public string? ResonForNotReturn { get; set; }

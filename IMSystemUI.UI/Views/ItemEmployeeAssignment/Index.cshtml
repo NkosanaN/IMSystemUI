@@ -4,6 +4,7 @@
     string isReturn = string.Empty;
     string date = string.Empty;
     string noneClass = string.Empty;
+    string none = string.Empty;
     Layout = "_LayoutDashboard";
 }
 <h1>@ViewData["Title"]</h1>
@@ -11,9 +12,9 @@
     <a asp-action="Create" class="btn btn-light shadow-sm">Create Transfer</a>
 </p>
 
-<table class="table w-100 table-striped" id="tbl">
+<table class="table table-striped" id="tbl">
     <thead>
-        <tr class="bg-opacity-10 bg-primary">
+        <tr class="bg-opacity-10">
             <th hidden>
                 @Html.DisplayNameFor(model => model.AssigmentId)
             </th>
@@ -39,7 +40,7 @@
                 @Html.DisplayNameFor(model => model.DateReturned)
             </th>
             <th hidden>
-                @Html.DisplayNameFor(model => model.ReturnedCondition)
+                @Html.DisplayNameFor(model => model.Condition)
             </th>
             <th hidden>
                 @Html.DisplayNameFor(model => model.ResonForNotReturn)
@@ -75,20 +76,22 @@
                 <td hidden>
                     @Html.DisplayFor(modelItem => item.ReceiverSignature)
                 </td>
+
                 <td>
                     @{
-                        noneClass = "fa fa-times text-center";
+                        //  noneClass = "fa fa-times";
                         if (item.DateReturned.HasValue)
                         {
-                            date = item.DateReturned.Value.ToString();
+                            date = item.DateReturned.Value.Date.ToShortDateString();
                             noneClass = string.Empty;
                         }
-
+                        // noneClass = "fa fa-times";
                     }
                     <span><i class="@noneClass" aria-hidden="true">@date</i></span>
                 </td>
+
                 <td hidden>
-                    @Html.DisplayFor(modelItem => item.ReturnedCondition)
+                    @Html.DisplayFor(modelItem => item.Condition)
                 </td>
                 <td hidden>
                     @Html.DisplayFor(modelItem => item.ResonForNotReturn)
@@ -96,12 +99,7 @@
 
                 <td>
                     @{
-                        isReturn = "fa fa-times-circle ";
-                        if (item.IsReturned)
-                        {
-                            isReturn = "fa fa-check-circle text-center";
-                        }
-
+                        isReturn = item.IsReturned ? "fa fa-check-circle" : "fa fa-times-circle";
                     }
                     <span><i class="@isReturn" aria-hidden="true"></i></span>
                 </td>
@@ -117,7 +115,18 @@
                                 <li><a class="dropdown-item" href="/ItemEmployeeAssignment/Details?id=@item.AssigmentId">Details</a></li>
                                 <li><a class="dropdown-item" href="/ItemEmployeeAssignment/Delete?id=@item.AssigmentId">Delete</a></li>
                                 <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#staticBackdrop">Return Item</a></li>
+                                <li>
+                                    @{
+                                        none = item.IsReturned ? "dropdown-item d-none" : "dropdown-item";
+                                    }
+                                    <a class="@none"
+                                       data-bs-toggle="modal"
+                                       data-bs-target="#staticBackdrop"
+                                       onclick="saveId('@item.AssigmentId')">Return Item</a>
+                                </li>
+
+                                @*<li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#staticBackdrop">Report As Lost</a></li>*@
+                                @*                            <li><hr class="dropdown-divider"></li>*@
                                 <li><a class="dropdown-item" href="/ItemEmployeeAssignment/ViewItemTransferHistory?id=@item.ItemId">View Item History</a></li>
                             </ul>
                         </div>
@@ -127,9 +136,6 @@
         }
     </tbody>
 </table>
-
-
-
 
 
 <!-- Modal -->
@@ -146,25 +152,19 @@
                 <div class="form-group col-12">
                     <label class="control-label"></label>
                     <textarea style="height: 100%; width: 100%; resize: none" rows="5"
-                              class="form-control" id="validationTextarea" placeholder="Please provide Return Condition" required></textarea>
+                              class="form-control" id="validationTextarea" placeholder="Please provide Item Return Condition" required></textarea>
 
                     <span class="text-danger"></span>
                 </div>
-                <div class="form-group col-12">
-                    <label class="control-label"></label>
-                    <textarea style="height: 100%; width: 100%; resize: none" rows="5"
-                              class="form-control" id="validationTextarea1" placeholder="Please provide Reason For Not Returning Item" required></textarea>
-                    <span class="text-danger"></span>
-                </div>
+
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-outline-primary shadow-sm m-0">Submit</button>
+                <button type="button" class="btn btn-outline-primary shadow-sm m-0" onclick="ReturnItem()">Submit</button>
             </div>
         </div>
     </div>
 </div>
-
 
 
 @section Scripts {
@@ -177,7 +177,49 @@
                 ]
             });
         });
-        
-       
+
+        function ReturnItem() {
+            var note = $("#validationTextarea").val();
+            //console.log(id);
+            //console.log(note);
+
+            if (note == "") {
+                Swal.fire({
+                    title: '',
+                    text: 'Please provide item condition before submitting.',
+                    icon: 'info'
+                });
+
+                return;
+            }
+            
+
+            $.ajax({
+                url: "/ItemEmployeeAssignment/ReturnItem",
+                method: "POST",
+                data: { 'id': localStorage.getItem("itransfer"), 'note': note },
+                success: function (result) {
+                    if (result.success) {
+                        $("#staticBackdrop").modal('hide');
+                        $("#idationTextarea").val('');
+                        window.location.href = "@Url.Action("Index", "ItemEmployeeAssignment")";
+                        //toastr.success(result.message);
+                        //setTimeout(function () { location.reload(); }, 500);
+                    }
+                    else {
+                        Swal.fire({
+                            title: 'info',
+                            text: result.message,
+                            icon: 'error'
+                        });
+                    }
+                }
+            })
+        }
+
+        function saveId(id) {
+            localStorage.setItem("itransfer", id);
+        }
+
     </script>
 }

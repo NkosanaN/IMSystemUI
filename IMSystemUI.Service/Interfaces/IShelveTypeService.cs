@@ -4,10 +4,10 @@ namespace IMSystemUI.Service.Interfaces;
 
 public interface IShelveTypeService
 {
-    Task<IEnumerable<ShelveType>> GetAllShelveTypesAsync();
-    Task<ShelveType> GetAllShelveTypeAsync(Guid id);
-    Task<ShelveType> CreateShelveTypeAsync(ShelveType shelvetype);
+    Task<IEnumerable<ShelveType>> GetAllShelveTypesAsync(string token);
+    Task<ShelveType> GetAllShelveTypeAsync(Guid id, string token);
+    Task<ShelveType> CreateShelveTypeAsync(ShelveType shelvetype, string token);
 
-    Task UpdateShelveTypeAsync(Guid id, ShelveType shelvetype);
-    Task RemoveShelveTypeAsync(Guid id);
+    Task UpdateShelveTypeAsync(Guid id, ShelveType shelvetype, string token);
+    Task RemoveShelveTypeAsync(Guid id, string token);
 }

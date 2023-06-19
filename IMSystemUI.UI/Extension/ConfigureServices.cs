@@ -1,6 +1,8 @@
 ﻿using IMSystemUI.Service.Interfaces;
 using IMSystemUI.Service.Repository;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+
 namespace IMSystemUI.UI.Extension;
 public static class ServicesApplication
 {
@@ -23,20 +25,21 @@ public static class ServicesApplication
                 options.SlidingExpiration = true;
             });
 
-        services.AddControllersWithViews();
+      
 
         services.AddDistributedMemoryCache();
 
         services.AddSession(options =>
         {
-            options.IdleTimeout = TimeSpan.FromSeconds(10);
+            options.IdleTimeout = TimeSpan.FromSeconds(1000);
             options.Cookie.HttpOnly = true;
             options.Cookie.IsEssential = true;
         });
 
+        services.AddHttpContextAccessor();
 
-     
-        
+       // services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+
         services.AddHttpClient<IUserService, UserService>();
         services.AddHttpClient<ISupplierService, SupplierService>();
         services.AddHttpClient<IItemService, ItemService>();
@@ -44,6 +47,7 @@ public static class ServicesApplication
         services.AddHttpClient<IDepartmentService, DepartmentService>();
         services.AddHttpClient<IShelveTypeService, ShelveTypeService>();
 
+        services.AddControllersWithViews();
         return services;
     }
 }

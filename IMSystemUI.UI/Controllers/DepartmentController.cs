@@ -8,6 +8,7 @@ namespace IMSystemUI.UI.Controllers
     public class DepartmentController : BaseController
     {
         private readonly IDepartmentService _idepartmentSrv;
+        
         public DepartmentController(IDepartmentService idepartmentSrv)
         {
             _idepartmentSrv = idepartmentSrv;
@@ -16,7 +17,7 @@ namespace IMSystemUI.UI.Controllers
         // GET: DepartmentController
         public async Task<ActionResult> Index()
         {
-            var data = await _idepartmentSrv.GetAllDepartmentsAsync();
+            var data = await _idepartmentSrv.GetAllDepartmentsAsync(Token);
 
             return View(data);
         }
@@ -24,7 +25,7 @@ namespace IMSystemUI.UI.Controllers
         // GET: DepartmentController/Details/5
         public async Task<ActionResult> Details(Guid id)
         {
-            var data = await _idepartmentSrv.GetAllDepartmentAsync(id);
+            var data = await _idepartmentSrv.GetAllDepartmentAsync(id , Token);
 
             return View(data);
         }
@@ -45,7 +46,7 @@ namespace IMSystemUI.UI.Controllers
                 const string msg = ResponseMessageCodes.SuccessDepartment;
                 var success = ResponseMessageCodes.SuccefullDictionary[msg];
 
-                await _idepartmentSrv.CreateDepartmentAsync(model);
+                await _idepartmentSrv.CreateDepartmentAsync(model, Token);
                 Notify(success, type: NotificationType.success);
 
                 return RedirectToAction(nameof(Index));
@@ -58,14 +59,12 @@ namespace IMSystemUI.UI.Controllers
                 Notify(errorDescription, type: NotificationType.error);
                 return View();
             }
-
-
         }
 
         // GET: DepartmentController/Edit/5
         public async Task<ActionResult> Edit(Guid id)
         {
-            var data = await _idepartmentSrv.GetAllDepartmentAsync(id);
+            var data = await _idepartmentSrv.GetAllDepartmentAsync(id, Token);
 
             return View(data);
         }
@@ -89,7 +88,7 @@ namespace IMSystemUI.UI.Controllers
         // GET: DepartmentController/Delete/5
         public async Task<ActionResult> Delete(Guid id)
         {
-            var data = await _idepartmentSrv.GetAllDepartmentAsync(id);
+            var data = await _idepartmentSrv.GetAllDepartmentAsync(id, Token);
 
             return View(data);
         }
@@ -101,7 +100,7 @@ namespace IMSystemUI.UI.Controllers
         {
             try
             {
-                await _idepartmentSrv.RemoveDepartmentAsync(id);
+                await _idepartmentSrv.RemoveDepartmentAsync(id, Token);
                 return RedirectToAction(nameof(Index));
             }
             catch

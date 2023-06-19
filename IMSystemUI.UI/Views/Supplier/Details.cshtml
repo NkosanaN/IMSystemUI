@@ -6,35 +6,37 @@
 }
 <h1>@ViewData["Title"]</h1>
 <hr />
-<div class="container bg-opacity-100 shadow-sm">
-    <table>
-        <tbody class="w-100 table table-striped">
-            <tr style="height: 25%" >
-                <th class="col-4  table-striped">@Html.DisplayNameFor(model => model.SupplierId)</th>
-                <td>@Html.DisplayFor(model => model.SupplierId)</td>
-            </tr>
 
-            <tr>
-                <th>@Html.DisplayNameFor(model => model.SupplierName)</th>
-                <td>@Html.DisplayFor(model => model.SupplierName)</td>
-            </tr>
+<div class="row">
+    <div class="container bg-opacity-100 shadow-sm">
+        <table class="mb-2">
+            <tbody class="w-100 table table-striped">
+                <tr>
+                    <th class="p-2">@Html.DisplayNameFor(model => model.SupplierId)</th>
+                    <td class="p-2">@Html.DisplayFor(model => model.SupplierId)</td>
+                </tr>
 
-            <tr>
-                <th>@Html.DisplayNameFor(model => model.SupplierDescription)</th>
-                <td> @Html.DisplayFor(model => model.SupplierDescription)</td>
-            </tr>
+                <tr>
+                    <th class="p-2">@Html.DisplayNameFor(model => model.SupplierName)</th>
+                    <td class="p-2">@Html.DisplayFor(model => model.SupplierName)</td>
+                </tr>
 
-            <tr>
-                <th>@Html.DisplayNameFor(model => model.BookingDate)</th>
-                <td> @Html.DisplayFor(model => model.BookingDate)</td>
-            </tr>
+                <tr>
+                    <th class="p-2">@Html.DisplayNameFor(model => model.SupplierDescription)</th>
+                    <td class="p-2"> @Html.DisplayFor(model => model.SupplierDescription)</td>
+                </tr>
 
-        </tbody>
-    </table>
+                <tr>
+                    <th class="p-2">@Html.DisplayNameFor(model => model.BookingDate)</th>
+                    <td class="p-2"> @Html.DisplayFor(model => model.BookingDate)</td>
+                </tr>
 
-    <div>
-        @Html.ActionLink("Edit", "Edit", new { id = Model.SupplierId }, new { @class = "btn btn-light shadow-sm m-1" })
-        <a asp-action="Index" class="btn btn-outline-secondary shadow-sm">Back to List</a>
+            </tbody>
+        </table>
+
+        <div class="mb-2">
+            @Html.ActionLink("Edit", "Edit", new { id = Model.SupplierId }, new { @class = "btn btn-light shadow-sm m-0" })
+            <a asp-action="Index" class="btn btn-outline-secondary shadow-sm">Back to List</a>
+        </div>
     </div>
 </div>
-

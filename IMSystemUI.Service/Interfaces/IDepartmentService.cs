@@ -4,8 +4,8 @@ namespace IMSystemUI.Service.Interfaces;
 
 public interface IDepartmentService
 {
-    Task<IEnumerable<Department>> GetAllDepartmentsAsync();
-    Task<Department> GetAllDepartmentAsync(Guid id);
-    Task<Department> CreateDepartmentAsync(Department department);
-    Task RemoveDepartmentAsync(Guid id);
+    Task<IEnumerable<Department>> GetAllDepartmentsAsync(string token);
+    Task<Department> GetAllDepartmentAsync(Guid id, string token);
+    Task<Department> CreateDepartmentAsync(Department department, string token);
+    Task RemoveDepartmentAsync(Guid id, string token);
 }
