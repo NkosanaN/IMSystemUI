@@ -8,9 +8,6 @@ using Newtonsoft.Json.Linq;
 using IMSystemUI.Domain;
 using IMSystemUI.Service.Interfaces;
 using IMSystemUI.UI.Helpers;
-using System.Net.Http;
-using Microsoft.AspNetCore.Http;
-using DocumentFormat.OpenXml.Spreadsheet;
 
 namespace IMSystemUI.UI.Controllers
 {

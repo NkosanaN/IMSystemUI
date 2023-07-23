@@ -29,6 +29,7 @@ public class DepartmentService : IDepartmentService
 
             if (!httpResponse.IsSuccessStatusCode)
             {
+                //Q : how to make squiggly line go away?
                 throw new Exception("Cannot retrieve tasks");
             }
 

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using IMSystemUI.Service;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 
@@ -35,7 +36,10 @@ namespace IMSystemUI.UI.Helpers
             return value;
         }
 
-        public string Token => HttpContext.Session.GetString("SessionToken");
+        //public string Token => !string.IsNullOrEmpty(HttpContext.Session.GetString("SessionToken"))
+        //    ? HttpContext.Session.GetString("SessionToken")
+        //    : Constant.token;
+        public string Token => Constant.token;
         public string CreatedById => HttpContext.Session.GetString("SessionName");
         
 
