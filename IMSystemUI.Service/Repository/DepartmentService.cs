@@ -25,7 +25,7 @@ public class DepartmentService : IDepartmentService
         {
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
-            var httpResponse = await _client.GetAsync($"{_config.GetSection("apiUrl")}/Department");
+            var httpResponse = await _client.GetAsync($"{_config.GetSection("apiUrl").Value}/Department");
 
             if (!httpResponse.IsSuccessStatusCode)
             {
@@ -52,7 +52,7 @@ public class DepartmentService : IDepartmentService
         {
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
-            var httpResponse = await _client.GetAsync($"{_config.GetSection("apiUrl")}/Department");
+            var httpResponse = await _client.GetAsync($"{_config.GetSection("apiUrl").Value}/Department");
 
             if (!httpResponse.IsSuccessStatusCode)
             {
@@ -80,7 +80,7 @@ public class DepartmentService : IDepartmentService
 
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
-            var httpResponse = await _client.PostAsync($"{_config.GetSection("apiUrl")}/Department",
+            var httpResponse = await _client.PostAsync($"{_config.GetSection("apiUrl").Value}/Department",
                 new StringContent(content, Encoding.Default, "application/json"));
 
             if (!httpResponse.IsSuccessStatusCode)
@@ -103,7 +103,7 @@ public class DepartmentService : IDepartmentService
     public async Task RemoveDepartmentAsync(Guid id , string token)
     {
         _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-        var httpResponse = await _client.DeleteAsync($"{_config.GetSection("apiUrl")}/Department/{id}");
+        var httpResponse = await _client.DeleteAsync($"{_config.GetSection("apiUrl").Value}/Department/{id}");
 
         if (!httpResponse.IsSuccessStatusCode)
         {
