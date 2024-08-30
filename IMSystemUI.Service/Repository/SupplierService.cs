@@ -1,5 +1,6 @@
 ﻿using IMSystemUI.Domain;
 using IMSystemUI.Service.Interfaces;
+using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using System.Net.Http.Headers;
 using System.Text;
@@ -9,11 +10,12 @@ namespace IMSystemUI.Service.Repository;
 public class SupplierService : ISupplierService
 {
     private readonly HttpClient _client;
-    private const string apiUrl = "http://localhost:5293/api";
+    private readonly IConfiguration _config;
 
-    public SupplierService(HttpClient client)
+    public SupplierService(HttpClient client, IConfiguration config)
     {
         _client = client ?? throw new ArgumentNullException(nameof(client));
+        _config = config ?? throw new ArgumentNullException("config");
     }
 
     public async Task<IEnumerable<Supplier>> GetAllSupplierAsync(string token)
@@ -22,7 +24,7 @@ public class SupplierService : ISupplierService
         {
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
-            var httpResponse = await _client.GetAsync($"{apiUrl}/Supplier");
+            var httpResponse = await _client.GetAsync($"{_config.GetSection("apiUrl").Value}/Supplier");
 
             if (!httpResponse.IsSuccessStatusCode)
             {
@@ -47,7 +49,7 @@ public class SupplierService : ISupplierService
         {
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
-            var httpResponse = await _client.GetAsync($"{apiUrl}/Supplier/{id}");
+            var httpResponse = await _client.GetAsync($"{_config.GetSection("apiUrl").Value}/Supplier/{id}");
 
             if (!httpResponse.IsSuccessStatusCode)
             {
@@ -70,7 +72,7 @@ public class SupplierService : ISupplierService
     {
         _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
-        var httpResponse = await _client.DeleteAsync($"{apiUrl}/Supplier/{id}");
+        var httpResponse = await _client.DeleteAsync($"{_config.GetSection("apiUrl").Value}/Supplier/{id}");
 
         if (!httpResponse.IsSuccessStatusCode)
         {
@@ -86,7 +88,7 @@ public class SupplierService : ISupplierService
 
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
-            var httpResponse = await _client.PostAsync($"{apiUrl}/Supplier", new StringContent(content, Encoding.Default, "application/json"));
+            var httpResponse = await _client.PostAsync($"{_config.GetSection("apiUrl").Value}/Supplier", new StringContent(content, Encoding.Default, "application/json"));
 
             if (!httpResponse.IsSuccessStatusCode)
             {
@@ -112,7 +114,7 @@ public class SupplierService : ISupplierService
 
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
-            var httpResponse = await _client.PutAsync($"{apiUrl}/Supplier/{id}",
+            var httpResponse = await _client.PutAsync($"{_config.GetSection("apiUrl").Value}/Supplier/{id}",
                 new StringContent(content, Encoding.Default, "application/json"));
 
             if (!httpResponse.IsSuccessStatusCode)

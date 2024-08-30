@@ -5,7 +5,7 @@
     Layout = "_LayoutDashboard";
 }
 <h1>@ViewData["Title"]</h1>
-<hr/>
+<hr />
 <div class="row">
     <div class="container bg-opacity-100 shadow-sm">
         <form asp-action="Create">
@@ -27,6 +27,17 @@
 
             <div class="row  mb-3">
                 <div class="form-group col-12">
+                    <select asp-for="CreatedBy!.Id" class="js-example-basic-single js-states form-select"
+                            asp-items="@ViewBag.createdById" tabindex="-1">
+                        <option disabled selected>-Select Created By-</option>
+                    </select>
+                    <span asp-validation-for="CreatedBy!.Id" class="text-danger"></span>
+                </div>
+            </div>
+
+
+            <div class="row  mb-3">
+                <div class="form-group col-12">
                     <select asp-for="ShelveBy!.ShelfId" class="js-example-basic-single js-states form-select"
                             asp-items="@ViewBag.shelveList" tabindex="-1">
                         <option disabled selected>-Select Shelve-</option>
@@ -35,18 +46,20 @@
                 </div>
             </div>
 
+
+
             <div class="row  mb-3">
                 @*  <div class="form-group col-6">
-                    <label asp-for="Cost" class="control-label"></label>
-                    <input asp-for="Cost"  type="number" class="form-control" />
-                    <span asp-validation-for="Cost" class="text-danger"></span>
+                <label asp-for="Cost" class="control-label"></label>
+                <input asp-for="Cost"  type="number" class="form-control" />
+                <span asp-validation-for="Cost" class="text-danger"></span>
                 </div>*@
                 <div class="form-group col-6">
                     <label asp-for="DatePurchased" class="control-label"></label>
                     <input asp-for="DatePurchased" class="form-control" />
                     <span asp-validation-for="DatePurchased" class="text-danger"></span>
                 </div>
-   
+
 
                 <div class="form-group col-6">
                     <label asp-for="Qty" class="control-label"></label>
@@ -54,25 +67,25 @@
                     <span asp-validation-for="Qty" class="text-danger"></span>
                 </div>
             </div>
-            
-          
+
+
 
             <div class="form-group  mb-3">
                 <label asp-for="Description" class="control-label"></label>
                 <textarea style="height:100%; width: 100%" rows="5" class="form-control"
-                asp-for="Description" id="validationTextarea" placeholder="Please provide Item Description" required></textarea>
+                          asp-for="Description" id="validationTextarea" placeholder="Please provide Item Description" required></textarea>
                 <span asp-validation-for="Description" class="text-danger"></span>
             </div>
-            
-    
 
-    @*        <div class="form-group form-check mb-3">
-                <label class="form-check-label">
-                    <input class="form-check-input" asp-for="DueforRepair" /> @Html.DisplayNameFor(model => model.DueforRepair)
-                </label>
+
+
+            @*        <div class="form-group form-check mb-3">
+            <label class="form-check-label">
+            <input class="form-check-input" asp-for="DueforRepair" /> @Html.DisplayNameFor(model => model.DueforRepair)
+            </label>
             </div>*@
             <div class="form-group mb-3">
-                <input type="submit" value="Create" class="btn btn-light shadow-sm m-0"/>&nbsp;
+                <input type="submit" value="Create" class="btn btn-light shadow-sm m-0" />&nbsp;
                 <a asp-action="Index" class="btn btn-outline-secondary shadow-sm">Back to List</a>
             </div>
         </form>

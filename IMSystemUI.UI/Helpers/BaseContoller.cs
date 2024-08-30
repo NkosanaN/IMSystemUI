@@ -36,10 +36,10 @@ namespace IMSystemUI.UI.Helpers
             return value;
         }
 
-        //public string Token => !string.IsNullOrEmpty(HttpContext.Session.GetString("SessionToken"))
-        //    ? HttpContext.Session.GetString("SessionToken")
-        //    : Constant.token;
-        public string Token => Constant.token;
+        public string Token => !string.IsNullOrEmpty(HttpContext.Session.GetString("SessionToken"))
+            ? HttpContext.Session.GetString("SessionToken")
+            : Constant.token;
+        //public string Token => Constant.token;
         public string CreatedById => HttpContext.Session.GetString("SessionName");
         
 

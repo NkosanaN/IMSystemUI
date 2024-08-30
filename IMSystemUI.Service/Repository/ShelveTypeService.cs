@@ -1,5 +1,6 @@
 ﻿using IMSystemUI.Domain;
 using IMSystemUI.Service.Interfaces;
+using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using System.Net.Http.Headers;
 using System.Text;
@@ -9,11 +10,11 @@ namespace IMSystemUI.Service.Repository;
 public class ShelveTypeService : IShelveTypeService
 {
     private readonly HttpClient _client;
-    private const string apiUrl = "http://localhost:5293/api";
-
-    public ShelveTypeService(HttpClient client)
+    private readonly IConfiguration _config;
+    public ShelveTypeService(HttpClient client, IConfiguration config)
     {
         _client = client ?? throw new ArgumentNullException(nameof(client));
+        _config = config ?? throw new ArgumentNullException("config");
     }
     public async Task<IEnumerable<ShelveType>> GetAllShelveTypesAsync(string token)
     {
@@ -21,7 +22,7 @@ public class ShelveTypeService : IShelveTypeService
         {
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
-            var httpResponse = await _client.GetAsync($"{apiUrl}/ShelveType");
+            var httpResponse = await _client.GetAsync($"{_config.GetSection("apiUrl").Value}/ShelveTypes");
 
             if (!httpResponse.IsSuccessStatusCode)
             {
@@ -47,7 +48,7 @@ public class ShelveTypeService : IShelveTypeService
         {
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
-            var httpResponse = await _client.GetAsync($"{apiUrl}/ShelveType/{id}");
+            var httpResponse = await _client.GetAsync($"{_config.GetSection("apiUrl").Value}/ShelveTypes/{id}");
 
             if (!httpResponse.IsSuccessStatusCode)
             {
@@ -75,7 +76,7 @@ public class ShelveTypeService : IShelveTypeService
 
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
-            var httpResponse = await _client.PostAsync($"{apiUrl}/ShelveType", new StringContent(content, Encoding.Default, "application/json"));
+            var httpResponse = await _client.PostAsync($"{_config.GetSection("apiUrl").Value}/ShelveTypes", new StringContent(content, Encoding.Default, "application/json"));
 
             if (httpResponse.ReasonPhrase.Contains("Bad Request"))
             {
@@ -103,7 +104,7 @@ public class ShelveTypeService : IShelveTypeService
     {
         _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
-        var httpResponse = await _client.DeleteAsync($"{apiUrl}/ShelveType/{id}");
+        var httpResponse = await _client.DeleteAsync($"{_config.GetSection("apiUrl").Value}/ShelveTypes/{id}");
 
         if (!httpResponse.IsSuccessStatusCode)
         {
@@ -119,7 +120,7 @@ public class ShelveTypeService : IShelveTypeService
 
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
-            var httpResponse = await _client.PutAsync($"{apiUrl}/ShelveTypes/{id}",
+            var httpResponse = await _client.PutAsync($"{_config.GetSection("apiUrl").Value}/ShelveTypes/{id}",
                 new StringContent(content, Encoding.Default, "application/json"));
 
             if (!httpResponse.IsSuccessStatusCode)

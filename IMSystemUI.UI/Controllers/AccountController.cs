@@ -8,6 +8,7 @@ using Newtonsoft.Json.Linq;
 using IMSystemUI.Domain;
 using IMSystemUI.Service.Interfaces;
 using IMSystemUI.UI.Helpers;
+using System.Net.Http.Headers;
 
 namespace IMSystemUI.UI.Controllers
 {
@@ -32,7 +33,7 @@ namespace IMSystemUI.UI.Controllers
             //var apiBaseUrl = _configuration.GetValue<string>("ApiBaseUrl");
             //var apiEndpoint = _configuration.GetValue<string>("ApiEndpoint");
 
-            var apiBaseUrl = "http://localhost:5293/api";
+            var apiBaseUrl = "http://localhost:8083";
             var apiEndpoint = "Account/login";
 
             // Call the API to authenticate the user and get a JWT token
@@ -59,13 +60,14 @@ namespace IMSystemUI.UI.Controllers
              //   return View();
             }
 
+            // Set the Authorization header using the AuthenticationHeaderValue
+            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
             // Decrypt the JWT token to authenticate the user
             var handler = new JwtSecurityTokenHandler();
             var jwt = handler.ReadJwtToken(token);
             var claims = jwt.Claims;
             //var identity = new ClaimsIdentity(claims, "JWT");
-
-            _httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {token}");
 
             var authProperties = new AuthenticationProperties
             {

@@ -1,5 +1,6 @@
 ﻿using IMSystemUI.Domain;
 using IMSystemUI.Service.Interfaces;
+using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Net.Http.Headers;
@@ -10,10 +11,11 @@ namespace IMSystemUI.Service.Repository;
 public class UserService : IUserService
 {
     private readonly HttpClient _client;
-    private const string apiUrl = "http://localhost:5293/api";
-    public UserService(HttpClient client)
+    private readonly IConfiguration _config;
+    public UserService(HttpClient client, IConfiguration config)
     {
         _client = client ?? throw new ArgumentNullException(nameof(client));
+        _config = config ?? throw new ArgumentNullException("config");
     }
 
     public async Task<IEnumerable<User>> GetAllUsersAsync(string token)
@@ -22,7 +24,7 @@ public class UserService : IUserService
         {
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
-            var httpResponse = await _client.GetAsync($"{apiUrl}/User");
+            var httpResponse = await _client.GetAsync($"{_config.GetSection("apiUrl").Value}/Account/Users");
 
             if (!httpResponse.IsSuccessStatusCode)
             {
@@ -48,7 +50,7 @@ public class UserService : IUserService
         {
             var content = JsonConvert.SerializeObject(reg);
 
-            var httpResponse = await _client.PostAsync($"{apiUrl}/Account/Register", new StringContent(content, Encoding.Default, "application/json"));
+            var httpResponse = await _client.PostAsync($"{_config.GetSection("apiUrl").Value}/Account/Register", new StringContent(content, Encoding.Default, "application/json"));
 
             if (!httpResponse.IsSuccessStatusCode)
             {
@@ -99,7 +101,7 @@ public class UserService : IUserService
     {
         try
         {
-            var httpResponse = await _client.GetAsync($"{apiUrl}/Account/Logout");
+            var httpResponse = await _client.GetAsync($"{_config.GetSection("apiUrl").Value}/Account/Logout");
 
             if (!httpResponse.IsSuccessStatusCode)
             {

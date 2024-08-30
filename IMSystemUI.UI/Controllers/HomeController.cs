@@ -59,7 +59,7 @@ namespace IMSystemUI.UI.Controllers
             return View(ChartData);
         }
 
-        public async Task<(int, int, int, int)> GetStats()
+        private async Task<(int, int, int, int)> GetStats()
         {
             var item = await _itemSrv.GetAllItemsAsync(Token);
             var itemCount = item.Count();

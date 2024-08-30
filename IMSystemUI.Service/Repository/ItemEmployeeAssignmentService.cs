@@ -1,5 +1,6 @@
 ﻿using IMSystemUI.Domain;
 using IMSystemUI.Service.Interfaces;
+using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using System.Net.Http.Headers;
 using System.Text;
@@ -9,11 +10,12 @@ namespace IMSystemUI.Service.Repository;
 public class ItemEmployeeAssignmentService : IItemEmployeeAssignmentService
 {
     private readonly HttpClient _client;
-    private const string apiUrl = "http://localhost:5293/api";
+    private readonly IConfiguration _config;
 
-    public ItemEmployeeAssignmentService(HttpClient client)
+    public ItemEmployeeAssignmentService(HttpClient client, IConfiguration config)
     {
         _client = client ?? throw new ArgumentNullException(nameof(client));
+        _config = config ?? throw new ArgumentNullException("config");
     }
 
     public async Task<IEnumerable<ItemEmployeeAssignment>> GetAllItemEmployeeAssignmentsAsync(string token)
@@ -22,7 +24,7 @@ public class ItemEmployeeAssignmentService : IItemEmployeeAssignmentService
         {
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
-            var httpResponse = await _client.GetAsync($"{apiUrl}/ItemEmployeeAssignment");
+            var httpResponse = await _client.GetAsync($"{_config.GetSection("apiUrl").Value}/ItemEmployeeAssignment");
 
             if (!httpResponse.IsSuccessStatusCode)
             {
@@ -47,7 +49,7 @@ public class ItemEmployeeAssignmentService : IItemEmployeeAssignmentService
         {
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
-            var httpResponse = await _client.GetAsync($"{apiUrl}/ItemEmployeeAssignment/{id}");
+            var httpResponse = await _client.GetAsync($"{_config.GetSection("apiUrl").Value}/ItemEmployeeAssignment/{id}");
 
             if (!httpResponse.IsSuccessStatusCode)
             {
@@ -75,7 +77,7 @@ public class ItemEmployeeAssignmentService : IItemEmployeeAssignmentService
 
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
-            var httpResponse = await _client.PostAsync($"{apiUrl}/ItemEmployeeAssignment",
+            var httpResponse = await _client.PostAsync($"{_config.GetSection("apiUrl").Value}/ItemEmployeeAssignment",
                 new StringContent(content, Encoding.Default, "application/json"));
 
             if (!httpResponse.IsSuccessStatusCode)
@@ -97,7 +99,7 @@ public class ItemEmployeeAssignmentService : IItemEmployeeAssignmentService
     public async Task RemoveItemEmployeeAssignmentAsync(Guid id, string token)
     {
         _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-        var httpResponse = await _client.DeleteAsync($"{apiUrl}/ItemEmployeeAssignment/{id}");
+        var httpResponse = await _client.DeleteAsync($"{_config.GetSection("apiUrl").Value}/ItemEmployeeAssignment/{id}");
 
         if (!httpResponse.IsSuccessStatusCode)
         {
@@ -113,7 +115,7 @@ public class ItemEmployeeAssignmentService : IItemEmployeeAssignmentService
 
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
-            var httpResponse = await _client.PutAsync($"{apiUrl}/ItemEmployeeAssignment/{iItem.AssigmentId}/ReturnItem",
+            var httpResponse = await _client.PutAsync($"{_config.GetSection("apiUrl").Value}/ItemEmployeeAssignment/{iItem.AssigmentId}/ReturnItem",
                 new StringContent(content, Encoding.Default, "application/json"));
 
             if (!httpResponse.IsSuccessStatusCode)

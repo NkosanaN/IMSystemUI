@@ -142,9 +142,17 @@ namespace IMSystemUI.UI.Controllers
         {
             var loadShelves = await _shelvetypeSrv.GetAllShelveTypesAsync(Token);
 
+            var loadUsers = await _userSrv.GetAllUsersAsync(Token);
+
             var dataShelves = loadShelves
                 .AsQueryable()
                 .Select(x => new { Value = x.ShelfId, Text = x.ShelfTag })
+                .ToList();
+
+            var dataUser = loadUsers
+                .AsQueryable()
+                //.Select(x => new { Value = x.Id, Text = $"{x.DisplayName} - ({x.Lastname})" })
+                .Select(x => new { Value = x.Id, Text = $"{x.DisplayName}" })
                 .ToList();
 
             ShelveList = dataShelves.Select(i => new SelectListItem
@@ -153,11 +161,18 @@ namespace IMSystemUI.UI.Controllers
                 Value = i.Value!.ToString()
             });
 
+            UserList = dataUser.Select(i => new SelectListItem
+            {
+                Text = i.Text,
+                Value = i.Value!.ToString()
+            });
 
             var model = new Item
             {
                 DatePurchased = Convert.ToDateTime(DateTime.Now.ToString("MM/dd/yyyy"))
             };
+
+            ViewBag.createdById = UserList;
 
             ViewBag.shelveList = ShelveList;
 
@@ -171,11 +186,11 @@ namespace IMSystemUI.UI.Controllers
         {
             try
             {
-                Guid.TryParse(CreatedById, out Guid CreatedByid);
-                model.CreatedById = CreatedByid;
+                //Guid.TryParse(CreatedById, out Guid CreatedByid);
+                model.CreatedById = model.CreatedBy!.Id;
                 model.ItemId = Guid.NewGuid();
                 model.ItemTag = "Empty";
-                model.ShelfId = model.ShelveBy.ShelfId;
+                model.ShelfId = model.ShelveBy!.ShelfId;
                 await _itemSrv.CreateItemAsync(model, Token);
 
                 Notify("Item", "Successful Add item.", type: NotificationType.success);
@@ -193,17 +208,34 @@ namespace IMSystemUI.UI.Controllers
 
             var loadShelves = await _shelvetypeSrv.GetAllShelveTypesAsync(Token);
 
+            var loadUsers = await _userSrv.GetAllUsersAsync(Token);
+
             var dataShelves = loadShelves
                 .AsQueryable()
                 .Select(x => new { Value = x.ShelfId, Text = x.ShelfTag })
                 .ToList();
+
+            var dataUser = loadUsers
+               .AsQueryable()
+               //.Select(x => new { Value = x.Id, Text = $"{x.DisplayName} - ({x.Lastname})" })
+               .Select(x => new { Value = x.Id, Text = $"{x.DisplayName}" })
+               .ToList();
 
             ShelveList = dataShelves.Select(i => new SelectListItem
             {
                 Text = i.Text,
                 Value = i.Value!.ToString()
             });
+
+            UserList = dataUser.Select(i => new SelectListItem
+            {
+                Text = i.Text,
+                Value = i.Value!.ToString()
+            });
+
+            ViewBag.createdById = UserList;
             ViewBag.shelveList = ShelveList;
+
             return View();
         }
 

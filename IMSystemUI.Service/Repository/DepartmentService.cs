@@ -1,6 +1,7 @@
 ﻿using IMSystemUI.Domain;
 using IMSystemUI.Service.Interfaces;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using System.Net.Http.Headers;
 using System.Text;
@@ -10,13 +11,12 @@ namespace IMSystemUI.Service.Repository;
 public class DepartmentService : IDepartmentService
 {
     private readonly HttpClient _client;
-    private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly IConfiguration _config;
 
-    private const string apiUrl = "http://localhost:5293/api";
-
-    public DepartmentService(HttpClient client)
+    public DepartmentService(HttpClient client, IConfiguration config)
     {
         _client = client ?? throw new ArgumentNullException(nameof(client));
+        _config = config ?? throw new ArgumentNullException("config");
     }
 
     public async Task<IEnumerable<Department>> GetAllDepartmentsAsync(string token)
@@ -25,7 +25,7 @@ public class DepartmentService : IDepartmentService
         {
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
-            var httpResponse = await _client.GetAsync($"{apiUrl}/Department");
+            var httpResponse = await _client.GetAsync($"{_config.GetSection("apiUrl")}/Department");
 
             if (!httpResponse.IsSuccessStatusCode)
             {
@@ -52,7 +52,7 @@ public class DepartmentService : IDepartmentService
         {
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
-            var httpResponse = await _client.GetAsync($"{apiUrl}/Department");
+            var httpResponse = await _client.GetAsync($"{_config.GetSection("apiUrl")}/Department");
 
             if (!httpResponse.IsSuccessStatusCode)
             {
@@ -80,7 +80,7 @@ public class DepartmentService : IDepartmentService
 
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
-            var httpResponse = await _client.PostAsync($"{apiUrl}/Department",
+            var httpResponse = await _client.PostAsync($"{_config.GetSection("apiUrl")}/Department",
                 new StringContent(content, Encoding.Default, "application/json"));
 
             if (!httpResponse.IsSuccessStatusCode)
@@ -103,7 +103,7 @@ public class DepartmentService : IDepartmentService
     public async Task RemoveDepartmentAsync(Guid id , string token)
     {
         _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-        var httpResponse = await _client.DeleteAsync($"{apiUrl}/Department/{id}");
+        var httpResponse = await _client.DeleteAsync($"{_config.GetSection("apiUrl")}/Department/{id}");
 
         if (!httpResponse.IsSuccessStatusCode)
         {
