@@ -24,7 +24,7 @@ public class UserService : IUserService
         {
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
-            var httpResponse = await _client.GetAsync($"{_config.GetSection("apiUrl").Value}/Account/Users");
+            var httpResponse = await _client.GetAsync($"{_config.GetSection("apiUrl").Value}/User");
 
             if (!httpResponse.IsSuccessStatusCode)
             {

@@ -23,7 +23,7 @@ public class ItemService : IItemService
         {
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
-            var httpResponse = await _client.GetAsync($"{_config.GetSection("apiUrl").Value}/Items");
+            var httpResponse = await _client.GetAsync($"{_config.GetSection("apiUrl").Value}/Item");
 
             if (!httpResponse.IsSuccessStatusCode)
             {
@@ -47,7 +47,7 @@ public class ItemService : IItemService
         {
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
-            var httpResponse = await _client.GetAsync($"{_config.GetSection("apiUrl").Value}/Items/{id}");
+            var httpResponse = await _client.GetAsync($"{_config.GetSection("apiUrl").Value}/Item/{id}");
 
             if (!httpResponse.IsSuccessStatusCode)
             {
@@ -70,11 +70,13 @@ public class ItemService : IItemService
     {
         try
         {
+            token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6IlNhbTFAZ21haWwuY29tMyIsIm5hbWVpZCI6IjRmNWRjZjU3LTIzMmMtNDBmZS05MWRkLTczNWFmZTU1MjgzNSIsImVtYWlsIjoiM1NhbTFAZ21haWwuY29tIiwibmJmIjoxNzI1MTEwNTYzLCJleHAiOjE3MjU3MTUzNjMsImlhdCI6MTcyNTExMDU2M30.VYZPpPlVYKdf2117YJHfbPapAZ_0-MgWyJmQAEAji2A";
+
             var content = JsonConvert.SerializeObject(item);
 
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
-            var httpResponse = await _client.PostAsync($"{_config.GetSection("apiUrl").Value}/Items", new StringContent(content, Encoding.Default, "application/json"));
+            var httpResponse = await _client.PostAsync($"{_config.GetSection("apiUrl").Value}/Item", new StringContent(content, Encoding.Default, "application/json"));
 
             if (!httpResponse.IsSuccessStatusCode)
             {
@@ -96,7 +98,7 @@ public class ItemService : IItemService
     {
         _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
-        var httpResponse = await _client.DeleteAsync($"{_config.GetSection("apiUrl").Value}/Items/{id}");
+        var httpResponse = await _client.DeleteAsync($"{_config.GetSection("apiUrl").Value}/Item/{id}");
 
         if (!httpResponse.IsSuccessStatusCode)
         {
@@ -112,7 +114,7 @@ public class ItemService : IItemService
 
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
-            var httpResponse = await _client.PutAsync($"{_config.GetSection("apiUrl").Value}/Items/{item.ItemId}/BookRepairItem",
+            var httpResponse = await _client.PutAsync($"{_config.GetSection("apiUrl").Value}/Item/{item.ItemId}/BookRepairItem",
                 new StringContent(content, Encoding.Default, "application/json"));
 
             if (!httpResponse.IsSuccessStatusCode)
@@ -136,7 +138,7 @@ public class ItemService : IItemService
 
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
-            var httpResponse = await _client.PutAsync($"{_config.GetSection("apiUrl").Value}/Items/{id}", new StringContent(content, Encoding.Default, "application/json"));
+            var httpResponse = await _client.PutAsync($"{_config.GetSection("apiUrl").Value}/Item/{id}", new StringContent(content, Encoding.Default, "application/json"));
 
             if (!httpResponse.IsSuccessStatusCode)
             {

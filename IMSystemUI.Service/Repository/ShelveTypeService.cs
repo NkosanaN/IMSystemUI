@@ -22,7 +22,7 @@ public class ShelveTypeService : IShelveTypeService
         {
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
-            var httpResponse = await _client.GetAsync($"{_config.GetSection("apiUrl").Value}/ShelveTypes");
+            var httpResponse = await _client.GetAsync($"{_config.GetSection("apiUrl").Value}/ShelveType");
 
             if (!httpResponse.IsSuccessStatusCode)
             {
@@ -48,7 +48,7 @@ public class ShelveTypeService : IShelveTypeService
         {
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
-            var httpResponse = await _client.GetAsync($"{_config.GetSection("apiUrl").Value}/ShelveTypes/{id}");
+            var httpResponse = await _client.GetAsync($"{_config.GetSection("apiUrl").Value}/ShelveType/{id}");
 
             if (!httpResponse.IsSuccessStatusCode)
             {
@@ -76,7 +76,7 @@ public class ShelveTypeService : IShelveTypeService
 
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
-            var httpResponse = await _client.PostAsync($"{_config.GetSection("apiUrl").Value}/ShelveTypes", new StringContent(content, Encoding.Default, "application/json"));
+            var httpResponse = await _client.PostAsync($"{_config.GetSection("apiUrl").Value}/ShelveType", new StringContent(content, Encoding.Default, "application/json"));
 
             if (httpResponse.ReasonPhrase.Contains("Bad Request"))
             {
@@ -104,7 +104,7 @@ public class ShelveTypeService : IShelveTypeService
     {
         _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
-        var httpResponse = await _client.DeleteAsync($"{_config.GetSection("apiUrl").Value}/ShelveTypes/{id}");
+        var httpResponse = await _client.DeleteAsync($"{_config.GetSection("apiUrl").Value}/ShelveType/{id}");
 
         if (!httpResponse.IsSuccessStatusCode)
         {
@@ -120,7 +120,7 @@ public class ShelveTypeService : IShelveTypeService
 
             _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
-            var httpResponse = await _client.PutAsync($"{_config.GetSection("apiUrl").Value}/ShelveTypes/{id}",
+            var httpResponse = await _client.PutAsync($"{_config.GetSection("apiUrl").Value}/ShelveType/{id}",
                 new StringContent(content, Encoding.Default, "application/json"));
 
             if (!httpResponse.IsSuccessStatusCode)

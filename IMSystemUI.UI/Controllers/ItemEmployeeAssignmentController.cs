@@ -92,8 +92,7 @@ namespace IMSystemUI.UI.Controllers
 
             var dataUser = loadUsers
                 .AsQueryable()
-                    //.Select(x => new { Value = x.Id, Text = $"{x.Firstname} - ({x.Lastname})" })
-                .Select(x => new { Value = x.Id, Text = $"{x.DisplayName}" })
+                .Select(x => new { Value = x.Id, Text = $"{x.Firstname} - ({x.Lastname})" })
                 .ToList();
 
             var dataItem = loadItems
@@ -165,8 +164,7 @@ namespace IMSystemUI.UI.Controllers
 
             var dataUser = loadUsers
                 .AsQueryable()
-                //.Select(x => new { Value = x.Id, Text = $"{x.Firstname} - ({x.Lastname})" })
-                .Select(x => new { Value = x.Id, Text = $"{x.DisplayName}" })
+                .Select(x => new { Value = x.Id, Text = $"{x.Firstname} - ({x.Lastname})" })
                 .ToList();
 
             var dataItem = loadItems
@@ -207,8 +205,7 @@ namespace IMSystemUI.UI.Controllers
 
             var dataUser = loadUsers
                 .AsQueryable()
-                //.Select(x => new { Value = x.Id, Text = $"{x.Firstname} - ({x.Lastname})" })
-                .Select(x => new { Value = x.Id, Text = $"{x.DisplayName}" })
+                .Select(x => new { Value = x.Id, Text = $"{x.Firstname} - ({x.Lastname})" })
                 .ToList();
 
             var dataItem = loadItems

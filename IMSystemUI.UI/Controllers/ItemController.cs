@@ -151,8 +151,7 @@ namespace IMSystemUI.UI.Controllers
 
             var dataUser = loadUsers
                 .AsQueryable()
-                //.Select(x => new { Value = x.Id, Text = $"{x.DisplayName} - ({x.Lastname})" })
-                .Select(x => new { Value = x.Id, Text = $"{x.DisplayName}" })
+                .Select(x => new { Value = x.Id, Text = $"{x.DisplayName} - ({x.Lastname})" })
                 .ToList();
 
             ShelveList = dataShelves.Select(i => new SelectListItem
@@ -217,8 +216,7 @@ namespace IMSystemUI.UI.Controllers
 
             var dataUser = loadUsers
                .AsQueryable()
-               //.Select(x => new { Value = x.Id, Text = $"{x.DisplayName} - ({x.Lastname})" })
-               .Select(x => new { Value = x.Id, Text = $"{x.DisplayName}" })
+               .Select(x => new { Value = x.Id, Text = $"{x.DisplayName} - ({x.Lastname})" })
                .ToList();
 
             ShelveList = dataShelves.Select(i => new SelectListItem
